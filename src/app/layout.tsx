@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { Navigation } from "@/components/Navigation/Navigation";
+import { Layout } from "antd";
+import { ApolloWrapper } from "./ApolloWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +20,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <ApolloWrapper>
+          <AntdRegistry>
+            <Layout style={{ minHeight: "100vh", flexDirection: 'row' }}>
+              <Navigation />
+              <div className="w-full">{children}</div>
+            </Layout>
+          </AntdRegistry>
+        </ApolloWrapper>
+      </body>
     </html>
   );
 }

@@ -6,21 +6,42 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prisma:generate": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 npx prisma generate",
+    "prisma:pull": "npx prisma db pull",
+    "prisma:push": "npx prisma db push",
+    "prisma:migrate:dev": "npx prisma migrate dev --name add_user_id",
+    "prisma:migrate:reset": "npx prisma migrate reset"
   },
   "dependencies": {
+    "@ant-design/cssinjs": "^1.21.0",
+    "@ant-design/icons": "^5.4.0",
+    "@ant-design/nextjs-registry": "^1.0.1",
+    "@apollo/client": "^3.11.4",
+    "@apollo/experimental-nextjs-app-support": "^0.11.2",
+    "@biomejs/biome": "^1.8.3",
+    "@graphql-tools/schema": "^10.0.5",
+    "@graphql-tools/utils": "^10.5.3",
+    "@prisma/client": "^5.18.0",
+    "@prisma/extension-accelerate": "^1.1.0",
+    "antd": "^5.20.1",
+    "cross-env": "^7.0.3",
+    "dayjs": "^1.11.12",
+    "garph": "^0.6.8",
+    "graphql": "^16.9.0",
+    "graphql-yoga": "^5.6.3",
+    "next": "14.2.5",
     "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.5"
+    "react-dom": "^18"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.5",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.5"
+    "typescript": "^5"
   }
 }

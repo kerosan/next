@@ -1,46 +1,46 @@
 "use client";
 
-import { client } from "@/app/ApolloClient";
-import { getClient } from "@/app/ApolloClientRSC";
-import { SEARCH_ADDRESS } from "@/graphql/query/address";
 import { useLocalState } from "@/utils/useLocalState";
-import { useQuery, useSuspenseQuery } from "@apollo/client";
-import type { User } from "@prisma/client";
+import type { Address } from "@prisma/client";
 import { Modal, Input, Form, AutoComplete } from "antd";
-import type { ModalProps } from "antd";
-import {
-  type ReactNode,
-  useCallback,
-  useEffect,
-  type FC,
-  useRef,
-  ComponentProps,
-} from "react";
+import type { AutoCompleteProps, ModalProps } from "antd";
+import { useEffect, type FC } from "react";
 
 const Field = Form.Item;
 
 export const UserModal: FC<
-  ModalProps & { user?: any; }
+  ModalProps & { user?: any; onSearch: (text: string) => Address[] }
 > = (props) => {
   const [form] = Form.useForm();
 
-  const [state, setState] = useLocalState({
-    options: props.user ? [{ ...props.user.address }] : [],
+  const [state, setState] = useLocalState<{
+    options: AutoCompleteProps["options"];
+  }>({
+    options: props.user
+      ? [{ ...props.user.address }].map((i) => ({
+          title: i.address,
+          value: i.id,
+          id: i.id,
+        }))
+      : [],
   });
 
   useEffect(() => {
     if (props.open && props.user) {
       form.resetFields();
-      form.setFieldsValue(props.user);
+    }
+  }, [form, props.open, props.user]);
 
+  useEffect(() => {
+    if (!form.isFieldsTouched(["address"])) {
       form.setFieldValue(
         "address",
-        state.options.find(
+        state.options?.find(
           (o) => Number(o.id) === Number(props.user.address.id),
-        )?.address,
+        )?.title,
       );
     }
-  }, [form, props.open, props.user, state.options]);
+  }, [form, props.user.address.id, state.options]);
 
   console.log({ state });
 
@@ -57,10 +57,10 @@ export const UserModal: FC<
           name="form_in_modal"
           initialValues={{ ...props.user }}
           clearOnDestroy
-          onFieldsChange={(a) => console.log({ a })}
-          onFinishFailed={(b) => console.log({ b })}
-          onValuesChange={(c) => console.log({ c })}
-          onFinish={(d) => console.log({ d })}
+          onFieldsChange={(a) => console.log("onFieldsChange", { a })}
+          onFinishFailed={(b) => console.log("onFinishFailed", { b })}
+          onValuesChange={(c) => console.log("onValuesChange", { c })}
+          onFinish={(d) => console.log("onFinish", { d })}
         >
           {dom}
         </Form>
@@ -75,20 +75,42 @@ export const UserModal: FC<
       <Field label="Email" name="email" colon>
         <Input />
       </Field>
+      <Field label="AddressId" name="addressId" hidden>
+        <Input hidden />
+      </Field>
       <Field label="Address" name="address" colon>
         <AutoComplete
-          onClick={async () => {
-            // const options = await refetch();
-            // console.log(options);
-            // setState({ options });
+          allowClear
+          onFocus={async () => {
+            if (!form.getFieldValue("address")) {
+              const address = await props.onSearch("");
+              setState({
+                options: address.map((i) => ({
+                  title: i.address,
+                  value: i.id,
+                })),
+              });
+            }
           }}
+          onSelect={(id, data) => {
+            form.setFieldValue("address", data.title);
+            form.setFieldValue("addressId", data.value);
+          }}
+          optionRender={({ data }) => <div key={data.id}>{data.title}</div>}
           onSearch={async (text) => {
-            console.log({ text });
-            const ret = await getClient().query({query:SEARCH_ADDRESS, variables:{text}})
-            console.log({ ret });
+            const address = await props.onSearch(text);
+            setState({
+              options: address.map((i) => ({
+                title: i.address,
+                value: i.id,
+              })),
+            });
           }}
           options={state.options}
         />
+      </Field>
+      <Field label="DeviceId" name="deviceId" hidden>
+        <Input hidden />
       </Field>
       <Field label="Device" name="device">
         <AutoComplete />

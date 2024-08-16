@@ -19,3 +19,12 @@ export const GET_USUERS_PAGE = gql`
         }
     }
 `;
+
+export const SEARCH_ADDRESS = gql`
+  query searchAddress($text: String){
+    address(text: $text) {
+      id
+      address
+    }
+  }
+`;

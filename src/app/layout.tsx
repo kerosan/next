@@ -4,7 +4,7 @@ import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { Navigation } from "@/components/Navigation/Navigation";
 import { Layout } from "antd";
-import { ApolloWrapper } from "./ApolloWrapper";
+import { ApolloWrapper } from "@/components/ApolloWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +23,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ApolloWrapper>
           <AntdRegistry>
-            <Layout style={{ minHeight: "100vh", flexDirection: 'row' }}>
+            <Layout style={{ minHeight: "100vh", flexDirection: "row" }}>
               <Navigation />
               <div className="w-full">{children}</div>
             </Layout>

@@ -1,21 +1,27 @@
 import { Suspense } from "react";
-import { PreloadQuery, query } from "../ApolloClientRSC";
-import { GET_USUERS_PAGE } from "./user.gql";
+import { GET_USUERS_PAGE, SEARCH_ADDRESS } from "./user.gql";
 
 import { UserTable } from "./UserTable";
-import { SEARCH_ADDRESS } from "@/graphql/query/address";
+import { useQuery } from "@apollo/client";
+import { PreloadQuery, query } from "@/lib/apolloClient";
+import type { Address } from "@prisma/client";
 
 export default async function Page() {
-  // const onSearchAddress = async(text: string) => {
-  //   const ret = await query({ query: SEARCH_ADDRESS, variables: { text } });
-  //   return ret.data
-  // };
+  const onSearch = async (text: string) => {
+    "use server";
+
+    const { data } = await query<{ address: Address[] }>({
+      query: SEARCH_ADDRESS,
+      variables: { text },
+    });
+    return data.address;
+  };
 
   return (
     <>
       <PreloadQuery query={GET_USUERS_PAGE}>
         <Suspense fallback={<>loading</>}>
-          <UserTable  />
+          <UserTable onSearch={onSearch} />
         </Suspense>
       </PreloadQuery>
     </>

@@ -14,21 +14,17 @@ import {
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { Suspense, type FC } from "react";
 import { useLocalState } from "@/utils/useLocalState";
-import type { AnyObject } from "antd/es/_util/type";
-import createApolloClient from "../ApolloClient";
-import { PreloadQuery } from "../ApolloClientRSC";
 import { GET_USUERS_PAGE } from "./user.gql";
 import { useSuspenseQuery } from "@apollo/client";
-import { client } from '../ApolloClient';
 
 type State = {
   open: boolean;
   currentUser?: User;
 };
 
-export const UserTable: FC = (props) => {
-  const {data} = useSuspenseQuery<{users:User[]}>(GET_USUERS_PAGE);
-  
+export const UserTable: FC<{ onSearch: (text: string) => any }> = (props) => {
+  const { data } = useSuspenseQuery<{ users: User[] }>(GET_USUERS_PAGE);
+
   const [state, setState] = useLocalState<State>({
     open: false,
     currentUser: undefined,
@@ -65,6 +61,14 @@ export const UserTable: FC = (props) => {
     },
     {
       key: 5,
+      title: "Device",
+      // dataIndex: "device",
+      render: (_, row) => {
+        return row.device?.name;
+      },
+    },
+    {
+      key: 5,
       title: "Balance",
       dataIndex: "balance",
     },
@@ -91,29 +95,29 @@ export const UserTable: FC = (props) => {
   ];
 
   return (
-   
-      <Card>
-        <Flex align="baseline" justify="space-between">
-          <Typography.Title>Users</Typography.Title>
-          <Button
-            icon={<PlusOutlined />}
-            onClick={() => setState({ currentUser: undefined, open: true })}
-          />
-        </Flex>
+    <Card>
+      <Flex align="baseline" justify="space-between">
+        <Typography.Title>Users</Typography.Title>
+        <Button
+          icon={<PlusOutlined />}
+          onClick={() => setState({ currentUser: undefined, open: true })}
+        />
+      </Flex>
 
-        {state.open ? (
-          <UserModal
-            open={state.open}
-            user={state.currentUser}
-            closable
-            destroyOnClose
-            onCancel={() => {
-              setState({ open: false, currentUser: undefined });
-            }}
-          />
-        ) : null}
+      {state.open ? (
+        <UserModal
+          open={state.open}
+          user={state.currentUser}
+          closable
+          destroyOnClose
+          onSearch={props.onSearch}
+          onCancel={() => {
+            setState({ open: false, currentUser: undefined });
+          }}
+        />
+      ) : null}
 
-        <Table bordered rowKey={"id"} columns={columns} dataSource={data.users} />
-      </Card>
+      <Table bordered rowKey={"id"} columns={columns} dataSource={data.users} />
+    </Card>
   );
 };

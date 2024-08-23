@@ -1,7 +1,7 @@
 "use client";
 
 import { UserModal } from "@/components/modal/UserModal";
-import type { User } from "@prisma/client";
+import type { Address, User } from "@prisma/client";
 import {
   Button,
   Card,
@@ -14,16 +14,19 @@ import {
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { Suspense, type FC } from "react";
 import { useLocalState } from "@/utils/useLocalState";
-import { GET_USUERS_PAGE } from "./user.gql";
-import { useSuspenseQuery } from "@apollo/client";
+import { DELETE_USER, GET_USUERS_PAGE } from "./user.gql";
+import { useSuspenseQuery, useMutation } from "@apollo/client";
 
 type State = {
   open: boolean;
   currentUser?: User;
 };
 
-export const UserTable: FC<{ onSearch: (text: string) => any }> = (props) => {
+export const UserTable: FC<{ onSearch: (text: string) => Address[] }> = (
+  props,
+) => {
   const { data } = useSuspenseQuery<{ users: User[] }>(GET_USUERS_PAGE);
+  const [deleteUser, { error }] = useMutation(DELETE_USER);
 
   const [state, setState] = useLocalState<State>({
     open: false,
@@ -85,7 +88,10 @@ export const UserTable: FC<{ onSearch: (text: string) => any }> = (props) => {
           />{" "}
           <Popconfirm
             title="Sure to delete?"
-            onConfirm={() => console.log(row.key)}
+            onConfirm={async () => {
+              console.log(row.key);
+              await deleteUser({ variables: { userId: row.key } });
+            }}
           >
             <Button icon={<DeleteOutlined />} />
           </Popconfirm>

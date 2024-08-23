@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocalState } from "@/utils/useLocalState";
-import type { Address } from "@prisma/client";
+import type { Address, User } from "@prisma/client";
 import { Modal, Input, Form, AutoComplete } from "antd";
 import type { AutoCompleteProps, ModalProps } from "antd";
 import { useEffect, type FC } from "react";

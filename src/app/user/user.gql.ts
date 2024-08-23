@@ -28,3 +28,9 @@ export const SEARCH_ADDRESS = gql`
     }
   }
 `;
+
+export const DELETE_USER = gql`
+  mutation DeleteUser($userId: String){
+    deleteUser(userId: $userId)
+  }
+`;

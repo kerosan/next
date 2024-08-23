@@ -14,35 +14,36 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  email String? @unique
-  name String?
-  phone String?
+  id        Int     @id @default(autoincrement())
+  smId      String?
+  email     String? @unique
+  name      String?
+  phone     String?
   addressId Int?
-  deviceId Int?
-  balance Float? @default(0.0)
+  deviceId  Int?
+  balance   Float?  @default(0.0)
 }
 
 model Address {
-  id Int @id @default(autoincrement())
+  id      Int    @id @default(autoincrement())
   address String
 }
 
 model Device {
-  id Int @id @default(autoincrement())
-  name String?
-  initialValue Float @default(0.0)
+  id           Int     @id @default(autoincrement())
+  name         String?
+  initialValue Float   @default(0.0)
 }
 
 model Tariff {
-  id Int @id @default(autoincrement())
-  price Float
+  id        Int       @id @default(autoincrement())
+  price     Float
   startDate DateTime
-  endDate DateTime?
+  endDate   DateTime?
 }
 
 model Billing {
-  id Int @id @default(autoincrement())
-  userId Int
+  id      Int   @id @default(autoincrement())
+  userId  Int
   payment Float
 }

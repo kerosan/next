@@ -40,13 +40,17 @@ input CreateDeviceInput {
     name: String
     initialValue: Float
 }
-  type Query {
+type Query {
     users(id: ID): [User]
     address(id: ID, text: String): [Address]
     device: [Device]
     searchAddress(text: String!): [Address]
 }
 
+type Mutation {
+  createUser(user: CreateUserInput):User
+  deleteUser(userId: String)
+}
 
   `,
   resolvers: {
@@ -78,6 +82,13 @@ input CreateDeviceInput {
         });
       },
     },
-    // Mutation: {},
+    Mutation: {
+      createUser: async (parent, args, ctx, info) => {
+        console.log({ parent, args, ctx, info });
+      },
+      deleteUser: async (parent, args, ctx, info) => {
+        console.log({ parent, args, ctx, info });
+      },
+    },
   },
 });

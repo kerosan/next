@@ -16,17 +16,20 @@ import { Suspense, type FC } from "react";
 import { useLocalState } from "@/utils/useLocalState";
 import { DELETE_USER, GET_USUERS_PAGE } from "./user.gql";
 import { useSuspenseQuery, useMutation } from "@apollo/client";
+import { getClient } from "@/lib/apolloClient";
 
 type State = {
   open: boolean;
   currentUser?: User;
 };
 
-export const UserTable: FC<{ onSearch: (text: string) => Address[] }> = (
-  props,
-) => {
-  const { data } = useSuspenseQuery<{ users: User[] }>(GET_USUERS_PAGE);
-  const [deleteUser, { error }] = useMutation(DELETE_USER);
+export const UserTable: FC<{
+  onSearch: (text: string) => Promise<Address[]>;
+  onDelete: (userId: string) => Promise<void>;
+}> = (props) => {
+  const { data, refetch, fetchMore } = useSuspenseQuery<{ users: User[] }>(
+    GET_USUERS_PAGE,
+  );
 
   const [state, setState] = useLocalState<State>({
     open: false,
@@ -83,14 +86,16 @@ export const UserTable: FC<{ onSearch: (text: string) => Address[] }> = (
           <Button
             icon={<EditOutlined />}
             onClick={() => {
+              // biome-ignore lint/suspicious/noExplicitAny: <explanation>
               setState({ open: true, currentUser: row as any });
             }}
           />{" "}
           <Popconfirm
             title="Sure to delete?"
             onConfirm={async () => {
-              console.log(row.key);
-              await deleteUser({ variables: { userId: row.key } });
+              console.log({ row });
+              await props.onDelete(row.id);
+              await refetch();
             }}
           >
             <Button icon={<DeleteOutlined />} />

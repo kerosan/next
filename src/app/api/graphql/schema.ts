@@ -1,4 +1,3 @@
-import { Mutation } from "./../../node_modules/@apollo/client/react/components/Mutation.d";
 import prisma from "@/db/prisma";
 import { createSchema } from "graphql-yoga";
 
@@ -48,8 +47,8 @@ type Query {
 }
 
 type Mutation {
-  createUser(user: CreateUserInput):User
-  deleteUser(userId: String)
+  createUser(user: CreateUserInput): User
+  deleteUser(userId: String): String
 }
 
   `,
@@ -84,10 +83,19 @@ type Mutation {
     },
     Mutation: {
       createUser: async (parent, args, ctx, info) => {
-        console.log({ parent, args, ctx, info });
+        console.log("createUser", { parent, args, ctx, info });
+        const user = await prisma.user.create({
+          data: args,
+        });
+        return user;
       },
       deleteUser: async (parent, args, ctx, info) => {
-        console.log({ parent, args, ctx, info });
+        const user = await prisma.user.delete({
+          where: { id: Number(args.userId) },
+        });
+        console.log("deleted", { user });
+
+        return user.id;
       },
     },
   },

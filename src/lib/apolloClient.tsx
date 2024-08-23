@@ -5,6 +5,14 @@ import {
   InMemoryCache,
 } from "@apollo/experimental-nextjs-app-support";
 
+import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
+
+if (process.env.NODE_ENV === "development") {
+  // Adds messages only in a dev environment
+  loadDevMessages();
+  loadErrorMessages();
+}
+
 export const { getClient, query, PreloadQuery } = registerApolloClient(() => {
   return new ApolloClient({
     cache: new InMemoryCache(),

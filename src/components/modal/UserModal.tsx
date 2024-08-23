@@ -9,7 +9,8 @@ import { useEffect, type FC } from "react";
 const Field = Form.Item;
 
 export const UserModal: FC<
-  ModalProps & { user?: any; onSearch: (text: string) => Address[] }
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  ModalProps & { user?: any; onSearch: (text: string) => Promise<Address[]> }
 > = (props) => {
   const [form] = Form.useForm();
 

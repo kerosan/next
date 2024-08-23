@@ -18,7 +18,7 @@ export const start = async (ctx: Context) => {
   const user = await prisma.user.create({
     data: { smId, name: fullName || userName || "N/A" },
   });
-  console.log({ user });
+  console.log("Added new user");
 
   return ctx.reply(`Welcome @${userName}\nAdded to DB`);
 };

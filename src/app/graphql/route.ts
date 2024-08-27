@@ -8,13 +8,14 @@ const handleRequest = createYoga<{
   res: NextApiResponse;
 }>({
   schema,
-  context: () => ({
-    prisma,
-  }),
-  graphqlEndpoint: "/api/graphql",
+  // context: () => ({
+  //   prisma,
+  // }),
+  graphqlEndpoint: "/graphql",
 
   // Yoga needs to know how to create a valid Next response
   fetchAPI: { Response },
+  logging: "debug",
 });
 
 export {

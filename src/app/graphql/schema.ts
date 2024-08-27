@@ -1,6 +1,15 @@
 import prisma from "@/db/prisma";
 import { createSchema } from "graphql-yoga";
 
+/*
+
+# type Mutation {
+#   createUser(user: CreateUserInput): User
+#   deleteUser(userId: String): String
+# }
+
+*/
+
 export const schema = createSchema({
   typeDefs: /* GraphQL */ `
 
@@ -18,6 +27,8 @@ input CreateUserInput {
     email: String
     name: String
     phone: String
+    address: String
+    device: String
 }
 
 type Address {
@@ -26,7 +37,13 @@ type Address {
 }
 
 input CreateUserInput {
-    address: String
+    email: String
+    name: String
+    phone: String
+    # address: Address
+    # device: Device
+    # balance: Float
+    # address: String
 }
 
 type Device {
@@ -50,8 +67,7 @@ type Mutation {
   createUser(user: CreateUserInput): User
   deleteUser(userId: String): String
 }
-
-  `,
+`,
   resolvers: {
     Query: {
       users: async () => {
@@ -85,7 +101,9 @@ type Mutation {
       createUser: async (parent, args, ctx, info) => {
         console.log("createUser", { parent, args, ctx, info });
         const user = await prisma.user.create({
-          data: args,
+          data: {
+            name: args.user.name,
+          },
         });
         return user;
       },

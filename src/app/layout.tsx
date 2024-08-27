@@ -4,7 +4,7 @@ import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { Navigation } from "@/components/Navigation/Navigation";
 import { Layout } from "antd";
-import { ApolloWrapper } from "@/components/ApolloWrapper";
+import { ApolloWrapper } from "@/lib/apolloWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 

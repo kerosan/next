@@ -1,13 +1,19 @@
 import { Suspense } from "react";
-import { DELETE_USER, GET_USUERS_PAGE, SEARCH_ADDRESS } from "./user.gql";
+import {
+  CREATE_USER,
+  DELETE_USER,
+  GET_USUERS_PAGE,
+  SEARCH_ADDRESS,
+} from "./user.gql";
 
 import { UserTable } from "./UserTable";
 import { PreloadQuery, query, getClient } from "@/lib/apolloClient";
-import type { Address } from "@prisma/client";
+import type { Address, User } from "@prisma/client";
 
 export default async function Page() {
-  const onSearch = async (text: string) => {
+  const onSearchAddress = async (text: string) => {
     "use server";
+    console.log("onSearchAddress", { text });
 
     const { data } = await getClient().query<{ address: Address[] }>({
       query: SEARCH_ADDRESS,
@@ -16,25 +22,46 @@ export default async function Page() {
     return data.address;
   };
 
-  const onDelete = async (userId: string) => {
+  const onCreateUser = async (user: Partial<User>) => {
+    "use server";
+    console.log("onCreateUser", { user });
+
+    const { data, errors } = await getClient().mutate({
+      errorPolicy: "all",
+
+      mutation: CREATE_USER,
+
+      variables: { user },
+      refetchQueries: [{ query: GET_USUERS_PAGE }],
+    });
+    console.log({ data, errors });
+    return data;
+  };
+
+  const onDeleteUser = async (userId: string) => {
     "use server";
     console.log({ userId });
 
-    const { errors } = await getClient().mutate({
+    const { data, errors } = await getClient().mutate({
       mutation: DELETE_USER,
       variables: { userId },
-      // refetchQueries: [GET_USUERS_PAGE],
+      refetchQueries: [{ query: GET_USUERS_PAGE, variables: {} }],
     });
-    console.log({ errors });
+    console.log({ data, errors });
   };
 
   return (
-    <>
-      <PreloadQuery query={GET_USUERS_PAGE}>
-        <Suspense fallback={<>loading</>}>
-          <UserTable onSearch={onSearch} onDelete={onDelete} />
-        </Suspense>
-      </PreloadQuery>
-    </>
+    // <PreloadQuery query={GET_USUERS_PAGE}>
+    // {(queryRef) => (
+    <Suspense fallback={<p>loading...</p>}>
+      <UserTable
+        // queryRef={queryRef}
+        onSearchAddress={onSearchAddress}
+        onDeleteUser={onDeleteUser}
+        onCreateUser={onCreateUser}
+      />
+    </Suspense>
+    // )}
+    // </PreloadQuery>
   );
 }

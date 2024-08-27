@@ -29,6 +29,17 @@ export const SEARCH_ADDRESS = gql`
   }
 `;
 
+export const CREATE_USER = gql`
+  mutation CreateUser($user: CreateUserInput){
+    createUser(user: $user) {
+      id
+      name
+      phone
+      email
+    }
+  }
+`;
+
 export const DELETE_USER = gql`
   mutation DeleteUser($userId: String){
     deleteUser(userId: $userId)

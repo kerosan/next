@@ -10,7 +10,11 @@ const Field = Form.Item;
 
 export const UserModal: FC<
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  ModalProps & { user?: any; onSearch: (text: string) => Promise<Address[]> }
+  ModalProps & {
+    user?: any;
+    onSearch: (text: string) => Promise<Address[]>;
+    onCreate: (user: Partial<User>) => Promise<User>;
+  }
 > = (props) => {
   const [form] = Form.useForm();
 
@@ -41,7 +45,7 @@ export const UserModal: FC<
         )?.title,
       );
     }
-  }, [form, props.user.address.id, state.options]);
+  }, [form, props.user?.address?.id, state.options]);
 
   console.log({ state });
 
@@ -61,7 +65,10 @@ export const UserModal: FC<
           onFieldsChange={(a) => console.log("onFieldsChange", { a })}
           onFinishFailed={(b) => console.log("onFinishFailed", { b })}
           onValuesChange={(c) => console.log("onValuesChange", { c })}
-          onFinish={(d) => console.log("onFinish", { d })}
+          onFinish={async (d) => {
+            const user = await props.onCreate(d);
+            console.log("onFinish", { d, user });
+          }}
         >
           {dom}
         </Form>

@@ -5,6 +5,7 @@ const nextConfig = {
   },
   devIndicators: {
     appIsrStatus: true,
+    buildActivity: true,
   },
 };
 

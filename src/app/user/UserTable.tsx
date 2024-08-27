@@ -1,6 +1,6 @@
 "use client";
 
-import { UserModal } from "@/components/modal/UserModal";
+import { UserModal } from "./UserModal";
 import type { Address, User } from "@prisma/client";
 import {
   Button,
@@ -12,10 +12,16 @@ import {
   type TableColumnsType,
 } from "antd";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import { Suspense, type FC } from "react";
+import type { FC } from "react";
 import { useLocalState } from "@/utils/useLocalState";
-import { DELETE_USER, GET_USUERS_PAGE } from "./user.gql";
-import { useSuspenseQuery, useMutation } from "@apollo/client";
+import { GET_USUERS_PAGE } from "./user.gql";
+import {
+  QueryRef,
+  useQuery,
+  useQueryRefHandlers,
+  useReadQuery,
+  useSuspenseQuery,
+} from "@apollo/client";
 import { getClient } from "@/lib/apolloClient";
 
 type State = {
@@ -24,12 +30,13 @@ type State = {
 };
 
 export const UserTable: FC<{
-  onSearch: (text: string) => Promise<Address[]>;
-  onDelete: (userId: string) => Promise<void>;
+  onSearchAddress: (text: string) => Promise<Address[]>;
+  onCreateUser: (user: Partial<User>) => Promise<User>;
+  onDeleteUser: (userId: string) => Promise<void>;
 }> = (props) => {
-  const { data, refetch, fetchMore } = useSuspenseQuery<{ users: User[] }>(
-    GET_USUERS_PAGE,
-  );
+  const { data, error, refetch } = useQuery<{ users: User[] }>(GET_USUERS_PAGE);
+
+  console.log({ data, error });
 
   const [state, setState] = useLocalState<State>({
     open: false,
@@ -93,8 +100,8 @@ export const UserTable: FC<{
           <Popconfirm
             title="Sure to delete?"
             onConfirm={async () => {
-              console.log({ row });
-              await props.onDelete(row.id);
+              console.log("onConfirm", { row });
+              await props.onDeleteUser(row.id);
               await refetch();
             }}
           >
@@ -121,14 +128,27 @@ export const UserTable: FC<{
           user={state.currentUser}
           closable
           destroyOnClose
-          onSearch={props.onSearch}
+          onSearch={props.onSearchAddress}
+          onCreate={async (user) => {
+            const newUser = await props.onCreateUser(user);
+            if (newUser) {
+              setState({ open: false });
+              await refetch();
+            }
+            return newUser;
+          }}
           onCancel={() => {
             setState({ open: false, currentUser: undefined });
           }}
         />
       ) : null}
 
-      <Table bordered rowKey={"id"} columns={columns} dataSource={data.users} />
+      <Table
+        bordered
+        rowKey={"id"}
+        columns={columns}
+        dataSource={data?.users}
+      />
     </Card>
   );
 };

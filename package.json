@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "debug": "cross-env NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -30,7 +31,7 @@
     "grammy": "^1.29.0",
     "graphql": "^16.9.0",
     "graphql-yoga": "^5.7.0",
-    "next": "14.2.5",
+    "next": "^14.2.6",
     "next-connect": "^1.0.0",
     "react": "^18",
     "react-dom": "^18"

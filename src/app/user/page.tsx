@@ -4,7 +4,7 @@ import {
   DELETE_USER,
   GET_USUERS_PAGE,
   SEARCH_ADDRESS,
-} from "./user.gql";
+} from "./query";
 
 import { UserTable } from "./UserTable";
 import { PreloadQuery, query, getClient } from "@/lib/apolloClient";

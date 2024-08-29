@@ -1,0 +1,56 @@
+type User {
+    id: Int
+    email: String
+    name: String
+    phone: String
+    addressId: Int
+    address: Address
+    deviceId: Int
+    device: Device
+    balance: Float
+  }
+
+input CreateUserInput {
+    email: String
+    name: String
+    phone: String
+    address: String
+    device: String
+}
+
+type Address {
+    id: Int
+    address: String
+}
+
+input CreateUserInput {
+    email: String
+    name: String
+    phone: String
+    # address: Address
+    # device: Device
+    # balance: Float
+    # address: String
+}
+
+type Device {
+    id: Int
+    name: String
+    initialValue: Float
+}
+
+input CreateDeviceInput {
+    name: String
+    initialValue: Float
+}
+type Query {
+    users(id: Int): [User]
+    address(id: Int, text: String): [Address]
+    device: [Device]
+    searchAddress(text: String!): [Address]
+}
+
+type Mutation {
+  createUser(user: CreateUserInput): User
+  deleteUser(userId: Int): Int
+}

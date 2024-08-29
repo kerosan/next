@@ -14,15 +14,8 @@ import {
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import type { FC } from "react";
 import { useLocalState } from "@/utils/useLocalState";
-import { GET_USUERS_PAGE } from "./user.gql";
-import {
-  QueryRef,
-  useQuery,
-  useQueryRefHandlers,
-  useReadQuery,
-  useSuspenseQuery,
-} from "@apollo/client";
-import { getClient } from "@/lib/apolloClient";
+import { GET_USUERS_PAGE } from "./query";
+import { useQuery } from "@apollo/client";
 
 type State = {
   open: boolean;

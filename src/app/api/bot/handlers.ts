@@ -15,7 +15,7 @@ if (bot) {
         break;
       }
       default:
-        await ctx.reply(ctx.message.text);
+        await ctx.reply(`Unsuported command: ${ctx.message.text}`);
     }
   });
 }

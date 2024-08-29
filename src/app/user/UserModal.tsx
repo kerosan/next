@@ -1,7 +1,7 @@
 "use client";
 
+import type { User, Address, CreateUserInput } from "@/graphql/resolvers-types";
 import { useLocalState } from "@/utils/useLocalState";
-import type { Address, User } from "@prisma/client";
 import { Modal, Input, Form, AutoComplete } from "antd";
 import type { AutoCompleteProps, ModalProps } from "antd";
 import { useEffect, type FC } from "react";
@@ -9,11 +9,10 @@ import { useEffect, type FC } from "react";
 const Field = Form.Item;
 
 export const UserModal: FC<
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   ModalProps & {
-    user?: any;
+    user?: User;
     onSearch: (text: string) => Promise<Address[]>;
-    onCreate: (user: Partial<User>) => Promise<User>;
+    onCreate: (user: CreateUserInput) => Promise<User>;
   }
 > = (props) => {
   const [form] = Form.useForm();
@@ -23,7 +22,7 @@ export const UserModal: FC<
   }>({
     options: props.user
       ? [{ ...props.user.address }].map((i) => ({
-          title: i.address,
+          title: i.address ?? "",
           value: i.id,
           id: i.id,
         }))
@@ -41,7 +40,7 @@ export const UserModal: FC<
       form.setFieldValue(
         "address",
         state.options?.find(
-          (o) => Number(o.id) === Number(props.user.address.id),
+          (o) => Number(o.id) === Number(props.user?.address?.id),
         )?.title,
       );
     }
@@ -93,8 +92,8 @@ export const UserModal: FC<
             if (!form.getFieldValue("address")) {
               const address = await props.onSearch("");
               setState({
-                options: address.map((i) => ({
-                  title: i.address,
+                options: address.splice(0, 10).map((i) => ({
+                  title: i.address ?? "",
                   value: i.id,
                 })),
               });
@@ -109,7 +108,7 @@ export const UserModal: FC<
             const address = await props.onSearch(text);
             setState({
               options: address.map((i) => ({
-                title: i.address,
+                title: i.address ?? "",
                 value: i.id,
               })),
             });

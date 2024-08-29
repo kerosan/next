@@ -1,19 +1,9 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { schema } from "./schema";
+import schema from "./schema";
 import { createYoga } from "graphql-yoga";
-import prisma from "@/db/prisma";
 
-const handleRequest = createYoga<{
-  req: NextApiRequest;
-  res: NextApiResponse;
-}>({
+const handleRequest = createYoga({
   schema,
-  // context: () => ({
-  //   prisma,
-  // }),
   graphqlEndpoint: "/graphql",
-
-  // Yoga needs to know how to create a valid Next response
   fetchAPI: { Response },
   logging: "debug",
 });

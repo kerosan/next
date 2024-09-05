@@ -1,5 +1,5 @@
 import schema from "./schema";
-import { createYoga } from "graphql-yoga";
+import { createYoga, type YogaServerInstance } from "graphql-yoga";
 
 const handleRequest = createYoga({
   schema,
@@ -8,14 +8,21 @@ const handleRequest = createYoga({
   logging: "debug",
 });
 
-export {
-  handleRequest as GET,
-  handleRequest as POST,
-  handleRequest as OPTIONS,
-};
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+export const GET = (...args: any) => handleRequest.apply(this, args);
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+export const POST = (...args: any) => handleRequest.apply(this, args);
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+export const OPTIONS = (...args: any) => handleRequest.apply(this, args);
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// export {
+//   // handleRequest as GET,
+//   handleRequest as POST,
+//   handleRequest as OPTIONS,
+// };
+
+// export const config = {
+//   api: {
+//     bodyParser: false,
+//   },
+// };

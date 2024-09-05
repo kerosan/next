@@ -1,25 +1,27 @@
 import { Bot, type Context } from "grammy";
 import { start } from "./command/start";
 
-const bot = new Bot<Context>(process.env.TELEGRAM_BOT_TOKEN ?? "");
+type Self = { bot: Bot | undefined } & typeof globalThis;
 
-if (!("bot" in global) && !global.bot) {
-  global.bot = bot;
+const self: Self = { ...global, bot: undefined };
+
+if (!self.bot) {
+  self.bot = new Bot<Context>(process.env.TELEGRAM_BOT_TOKEN ?? "");
 }
 
-if (bot) {
-  bot.on("message:text", async (ctx) => {
-    switch (ctx.message.text) {
+if (self.bot) {
+  self.bot.on("message:text", async (ctx: Context) => {
+    switch (ctx.message?.text) {
       case "/start": {
         await start(ctx);
         break;
       }
       default:
-        await ctx.reply(`Unsuported command: ${ctx.message.text}`);
+        await ctx.reply(`Unsuported command: ${ctx.message?.text}`);
     }
   });
 }
 
-export const getInstance = () => {
-  return global.bot;
+export const getInstance = (): Self["bot"] => {
+  return self.bot;
 };

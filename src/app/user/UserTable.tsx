@@ -86,8 +86,7 @@ export const UserTable: FC<{
           <Button
             icon={<EditOutlined />}
             onClick={() => {
-              // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-              setState({ open: true, currentUser: row as any });
+              setState({ open: true, currentUser: row as User });
             }}
           />{" "}
           <Popconfirm

@@ -47,21 +47,17 @@ export default async function Page() {
       variables: { userId },
       refetchQueries: [{ query: GET_USUERS_PAGE, variables: {} }],
     });
+
     console.log({ data, errors });
   };
 
   return (
-    // <PreloadQuery query={GET_USUERS_PAGE}>
-    // {(queryRef) => (
     <Suspense fallback={<p>loading...</p>}>
       <UserTable
-        // queryRef={queryRef}
         onSearchAddress={onSearchAddress}
         onDeleteUser={onDeleteUser}
         onCreateUser={onCreateUser}
       />
     </Suspense>
-    // )}
-    // </PreloadQuery>
   );
 }

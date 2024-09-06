@@ -6,7 +6,6 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
-export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -20,6 +19,10 @@ export type Address = {
   __typename?: 'Address';
   address?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
+};
+
+export type CreateAddressInput = {
+  address: Scalars['String']['input'];
 };
 
 export type CreateDeviceInput = {
@@ -44,13 +47,25 @@ export type Device = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createAddress?: Maybe<Address>;
   createUser?: Maybe<User>;
+  deleteAddress?: Maybe<Scalars['Int']['output']>;
   deleteUser?: Maybe<Scalars['Int']['output']>;
+};
+
+
+export type MutationCreateAddressArgs = {
+  address?: InputMaybe<CreateAddressInput>;
 };
 
 
 export type MutationCreateUserArgs = {
   user?: InputMaybe<CreateUserInput>;
+};
+
+
+export type MutationDeleteAddressArgs = {
+  addressId?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -74,7 +89,7 @@ export type QueryAddressArgs = {
 
 
 export type QuerySearchAddressArgs = {
-  text: Scalars['String']['input'];
+  text?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -169,6 +184,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = ResolversObject<{
   Address: ResolverTypeWrapper<Address>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  CreateAddressInput: CreateAddressInput;
   CreateDeviceInput: CreateDeviceInput;
   CreateUserInput: CreateUserInput;
   Device: ResolverTypeWrapper<Device>;
@@ -184,6 +200,7 @@ export type ResolversTypes = ResolversObject<{
 export type ResolversParentTypes = ResolversObject<{
   Address: Address;
   Boolean: Scalars['Boolean']['output'];
+  CreateAddressInput: CreateAddressInput;
   CreateDeviceInput: CreateDeviceInput;
   CreateUserInput: CreateUserInput;
   Device: Device;
@@ -209,14 +226,16 @@ export type DeviceResolvers<ContextType = any, ParentType extends ResolversParen
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  createAddress?: Resolver<Maybe<ResolversTypes['Address']>, ParentType, ContextType, Partial<MutationCreateAddressArgs>>;
   createUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<MutationCreateUserArgs>>;
+  deleteAddress?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<MutationDeleteAddressArgs>>;
   deleteUser?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<MutationDeleteUserArgs>>;
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   address?: Resolver<Maybe<Array<Maybe<ResolversTypes['Address']>>>, ParentType, ContextType, Partial<QueryAddressArgs>>;
   device?: Resolver<Maybe<Array<Maybe<ResolversTypes['Device']>>>, ParentType, ContextType>;
-  searchAddress?: Resolver<Maybe<Array<Maybe<ResolversTypes['Address']>>>, ParentType, ContextType, RequireFields<QuerySearchAddressArgs, 'text'>>;
+  searchAddress?: Resolver<Maybe<Array<Maybe<ResolversTypes['Address']>>>, ParentType, ContextType, Partial<QuerySearchAddressArgs>>;
   users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType, Partial<QueryUsersArgs>>;
 }>;
 

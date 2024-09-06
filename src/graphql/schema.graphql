@@ -43,14 +43,22 @@ input CreateDeviceInput {
     name: String
     initialValue: Float
 }
+
+input CreateAddressInput {
+    address: String!
+}
+
 type Query {
     users(id: Int): [User]
     address(id: Int, text: String): [Address]
     device: [Device]
-    searchAddress(text: String!): [Address]
+    searchAddress(text: String): [Address]
 }
 
 type Mutation {
   createUser(user: CreateUserInput): User
   deleteUser(userId: Int): Int
+  
+  createAddress(address: CreateAddressInput): Address
+  deleteAddress(addressId: Int): Int
 }

@@ -7,8 +7,10 @@ export const resolvers: Resolvers = {
       return await prisma.user.findMany();
     },
     searchAddress: async (parent, args) => {
+      console.log("==>", args);
+
       return await prisma.address.findMany({
-        where: { address: { startsWith: args.text } },
+        where: { address: { startsWith: args.text || "" } },
       });
     },
     address: async (parent, args) => {

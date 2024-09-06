@@ -1,7 +1,6 @@
 "use client";
 
-import { UserModal } from "./UserModal";
-import type { Address, User } from "@prisma/client";
+import type { Address } from "@prisma/client";
 import {
   Button,
   Card,
@@ -14,20 +13,23 @@ import {
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import type { FC } from "react";
 import { useLocalState } from "@/utils/useLocalState";
-import { GET_USUERS_PAGE } from "./query";
 import { useQuery } from "@apollo/client";
+import { GET_ADDRESS_PAGE } from "./query";
+import { AddressModal } from "./AddressModal";
 
 type State = {
   open: boolean;
-  current?: User;
+  current?: Address;
 };
 
-export const UserTable: FC<{
-  onSearchAddress: (text: string) => Promise<Address[]>;
-  onCreateUser: (user: Partial<User>) => Promise<User>;
-  onDeleteUser: (userId: string) => Promise<void>;
+export const AddressTable: FC<{
+  onSearch: (text: string) => Promise<Address[]>;
+  onCreate: (address: Partial<Address>) => Promise<Address>;
+  onDelete: (addressId: string) => Promise<void>;
 }> = (props) => {
-  const { data, error, refetch } = useQuery<{ users: User[] }>(GET_USUERS_PAGE);
+  const { data, error, refetch } = useQuery<{ address: Address[] }>(
+    GET_ADDRESS_PAGE,
+  );
 
   if (error) {
     throw error;
@@ -45,57 +47,28 @@ export const UserTable: FC<{
       dataIndex: "id",
     },
     {
-      key: 1,
-      title: "Name",
-      dataIndex: "name",
-    },
-    {
-      key: 2,
-      title: "Phone",
-      dataIndex: "phone",
-    },
-    {
-      key: 3,
-      title: "Email",
-      dataIndex: "email",
-    },
-    {
       key: 4,
       title: "Address",
-      // dataIndex: "address",
-      render: (_, row) => {
-        return row.address?.address;
-      },
-    },
-    {
-      key: 5,
-      title: "Device",
-      // dataIndex: "device",
-      render: (_, row) => {
-        return row.device?.name;
-      },
-    },
-    {
-      key: 5,
-      title: "Balance",
-      dataIndex: "balance",
+      dataIndex: "address",
+      width: "90%",
     },
     {
       title: "operation",
       dataIndex: "operation",
+      width: "10%",
       render: (_, row) => (
         <>
           <Button
             icon={<EditOutlined />}
             onClick={() => {
-              setState({ open: true, current: row as User });
+              setState({ open: true, current: row as Address });
             }}
           />{" "}
           <Popconfirm
             title="Sure to delete?"
             onConfirm={async () => {
               console.log("onConfirm", { row });
-              await props.onDeleteUser(row.id);
+              await props.onDelete(row.id);
               await refetch();
             }}
           >
@@ -109,7 +82,7 @@ export const UserTable: FC<{
   return (
     <Card>
       <Flex align="baseline" justify="space-between">
-        <Typography.Title>Users</Typography.Title>
+        <Typography.Title>Address</Typography.Title>
         <Button
           icon={<PlusOutlined />}
           onClick={() => setState({ current: undefined, open: true })}
@@ -117,19 +90,19 @@ export const UserTable: FC<{
       </Flex>
 
       {state.open ? (
-        <UserModal
+        <AddressModal
           open={state.open}
-          user={state.current}
+          address={state.current}
           closable
           destroyOnClose
-          onSearch={props.onSearchAddress}
-          onCreate={async (user) => {
-            const newUser = await props.onCreateUser(user);
-            if (newUser) {
+          onSearch={props.onSearch}
+          onCreate={async (address) => {
+            const newAddress = await props.onCreate(address);
+            if (newAddress) {
               setState({ open: false });
               await refetch();
             }
-            return newUser;
+            return newAddress;
           }}
           onCancel={() => {
             setState({ open: false, current: undefined });
@@ -141,7 +114,7 @@ export const UserTable: FC<{
         bordered
         rowKey={"id"}
         columns={columns}
-        dataSource={data?.users}
+        dataSource={data?.address}
       />
     </Card>
   );

@@ -41,7 +41,7 @@ export const CREATE_USER = gql`
 `;
 
 export const DELETE_USER = gql`
-  mutation DeleteUser($userId: String){
+  mutation DeleteUser($userId: Int){
     deleteUser(userId: $userId)
   }
 `;

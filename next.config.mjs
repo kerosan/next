@@ -8,6 +8,8 @@ const nextConfig = {
     buildActivity: true,
   },
   webpack: (config, options) => {
+    config.infrastructureLogging = { debug: /PackFileCache/ };
+
     config.module.rules.push({
       test: /\.(graphql|gql)/,
       exclude: /node_modules/,

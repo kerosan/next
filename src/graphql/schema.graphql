@@ -62,7 +62,7 @@ type Query {
     users(id: Int): [User]
     address(take: Int!, skip: Int!): AddressPageResult
     device: [Device]
-    searchAddress(text: String): [Address]
+    searchAddress(text: String): [Address]!
 }
 
 type Mutation {

@@ -21,8 +21,8 @@ export const GET_USUERS_PAGE = gql`
 `;
 
 export const SEARCH_ADDRESS = gql`
-  query searchAddress($text: String){
-    address(text: $text) {
+  query SearchAddress($text: String){
+    searchAddress(text: $text) {
       id
       address
     }

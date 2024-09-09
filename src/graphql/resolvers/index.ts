@@ -13,6 +13,7 @@ export const resolvers: Resolvers = {
             contains: args.text ?? "",
           },
         },
+        take: 10,
       });
     },
     address: async (parent, args) => {
@@ -21,6 +22,7 @@ export const resolvers: Resolvers = {
         prisma.address.findMany({
           take: args.take,
           skip: args.skip,
+          orderBy: { address: "desc" },
         }),
       ]);
 

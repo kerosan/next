@@ -90,7 +90,7 @@ export type Query = {
   __typename?: 'Query';
   address?: Maybe<AddressPageResult>;
   device?: Maybe<Array<Maybe<Device>>>;
-  searchAddress?: Maybe<Array<Maybe<Address>>>;
+  searchAddress: Array<Maybe<Address>>;
   users?: Maybe<Array<Maybe<User>>>;
 };
 
@@ -264,7 +264,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   address?: Resolver<Maybe<ResolversTypes['AddressPageResult']>, ParentType, ContextType, RequireFields<QueryAddressArgs, 'skip' | 'take'>>;
   device?: Resolver<Maybe<Array<Maybe<ResolversTypes['Device']>>>, ParentType, ContextType>;
-  searchAddress?: Resolver<Maybe<Array<Maybe<ResolversTypes['Address']>>>, ParentType, ContextType, Partial<QuerySearchAddressArgs>>;
+  searchAddress?: Resolver<Array<Maybe<ResolversTypes['Address']>>, ParentType, ContextType, Partial<QuerySearchAddressArgs>>;
   users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType, Partial<QueryUsersArgs>>;
 }>;
 

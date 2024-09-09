@@ -16,6 +16,8 @@ import type { FC } from "react";
 import { useLocalState } from "@/utils/useLocalState";
 import { GET_USUERS_PAGE } from "./query";
 import { useQuery } from "@apollo/client";
+import type { Mutation, Query } from "@/graphql/resolvers-types";
+import type { onCreateUser, onDeleteUser, onSearchAddress } from "./action";
 
 type State = {
   open: boolean;
@@ -23,9 +25,9 @@ type State = {
 };
 
 export const UserTable: FC<{
-  onSearchAddress: (text: string) => Promise<Address[]>;
-  onCreateUser: (user: Partial<User>) => Promise<User>;
-  onDeleteUser: (userId: string) => Promise<void>;
+  onSearchAddress: typeof onSearchAddress;
+  onCreateUser: typeof onCreateUser;
+  onDeleteUser: typeof onDeleteUser;
 }> = (props) => {
   const { data, error, refetch } = useQuery<{ users: User[] }>(GET_USUERS_PAGE);
 

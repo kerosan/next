@@ -1,18 +1,24 @@
 "use client";
 
-import type { User, Address, CreateUserInput } from "@/graphql/resolvers-types";
+import type {
+  User,
+  Query,
+  CreateUserInput,
+  Mutation,
+} from "@/graphql/resolvers-types";
 import { useLocalState } from "@/utils/useLocalState";
 import { Modal, Input, Form, AutoComplete } from "antd";
 import type { AutoCompleteProps, ModalProps } from "antd";
 import { useEffect, type FC } from "react";
+import type { onCreateUser, onSearchAddress } from "./action";
 
 const Field = Form.Item;
 
 export const UserModal: FC<
   ModalProps & {
     user?: User;
-    onSearch: (text: string) => Promise<Address[]>;
-    onCreate: (user: CreateUserInput) => Promise<User>;
+    onSearch: typeof onSearchAddress;
+    onCreate: typeof onCreateUser;
   }
 > = (props) => {
   const [form] = Form.useForm();
@@ -90,11 +96,11 @@ export const UserModal: FC<
           allowClear
           onFocus={async () => {
             if (!form.getFieldValue("address")) {
-              const address = await props.onSearch("");
+              const { data } = await props.onSearch("");
               setState({
-                options: address.splice(0, 10).map((i) => ({
-                  title: i.address ?? "",
-                  value: i.id,
+                options: data.searchAddress?.map((i) => ({
+                  title: i?.address ?? "",
+                  value: i?.id?.toString(),
                 })),
               });
             }
@@ -105,11 +111,12 @@ export const UserModal: FC<
           }}
           optionRender={({ data }) => <div key={data.id}>{data.title}</div>}
           onSearch={async (text) => {
-            const address = await props.onSearch(text);
+            const { data } = await props.onSearch(text);
+
             setState({
-              options: address.map((i) => ({
-                title: i.address ?? "",
-                value: i.id,
+              options: data.searchAddress?.map((i) => ({
+                title: i?.address ?? "",
+                value: i?.id?.toString(),
               })),
             });
           }}

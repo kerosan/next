@@ -58,7 +58,7 @@ export const UserModal: FC<
         <Form
           layout="vertical"
           form={form}
-          name="form_in_modal"
+          name="user_form_in_modal"
           initialValues={{ ...props.user }}
           clearOnDestroy
           onFieldsChange={(a) => console.log("onFieldsChange", { a })}

@@ -9,8 +9,8 @@ import {
   SSRMultipartLink,
 } from "@apollo/experimental-nextjs-app-support";
 
-import { setVerbosity } from "ts-invariant";
-setVerbosity("debug");
+// import { setVerbosity } from "ts-invariant";
+// setVerbosity("debug");
 
 // have a function to create a client for you
 function makeClient() {

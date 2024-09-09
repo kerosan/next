@@ -1,11 +1,13 @@
-import { Address } from "@/graphql/resolvers-types";
 import { gql } from "@apollo/client/core";
 
 export const GET_ADDRESS_PAGE = gql`
-  {
-    address {
-      id
-      address
+  query AddressPage($take:Int!, $skip:Int!) {
+    address(take: $take, skip:$skip) {
+      list {
+        id
+        address
+      }
+      total
     }
   }
 `;
@@ -29,8 +31,17 @@ export const GET_ADDRESS = gql`
 `;
 
 export const CREATE_ADDRESS = gql`
-  mutation CreateAddress($address: Address){
+  mutation CreateAddress($address: CreateAddressInput!){
     createAddress(address: $address) {
+      id
+      address
+    }
+  }
+`;
+
+export const UPDATE_ADDRESS = gql`
+  mutation UpdateAddress($address: UpdateAddressInput!){
+    updateAddress(address: $address) {
       id
       address
     }
@@ -39,8 +50,6 @@ export const CREATE_ADDRESS = gql`
 
 export const DELETE_ADDRESS = gql`
   mutation DeleteAddress($addressId: Int){
-    deleteAddress(addressId: $addressId){
-      id
-    }
+    deleteAddress(addressId: $addressId)
   }
 `;

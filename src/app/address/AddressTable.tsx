@@ -7,38 +7,66 @@ import {
   Flex,
   Popconfirm,
   Table,
+  type TablePaginationConfig,
   Typography,
   type TableColumnsType,
 } from "antd";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import type { FC } from "react";
+import { useRef, type FC } from "react";
 import { useLocalState } from "@/utils/useLocalState";
 import { useQuery } from "@apollo/client";
 import { GET_ADDRESS_PAGE } from "./query";
 import { AddressModal } from "./AddressModal";
+import type {
+  AddressPageResult,
+  Mutation,
+  Query,
+} from "@/graphql/resolvers-types";
+import { useKey } from "react-use";
 
 type State = {
   open: boolean;
   current?: Address;
+  pagination: Pick<TablePaginationConfig, "current" | "pageSize">;
 };
 
 export const AddressTable: FC<{
-  onSearch: (text: string) => Promise<Address[]>;
-  onCreate: (address: Partial<Address>) => Promise<Address>;
-  onDelete: (addressId: string) => Promise<void>;
+  onSearch: (text: string) => Promise<Query["searchAddress"]>;
+  onCreate: (address: Partial<Address>) => Promise<Mutation["createAddress"]>;
+  onUpdate: (address: Partial<Address>) => Promise<Mutation["updateAddress"]>;
+  onDelete: (addressId: string) => Promise<Mutation["deleteAddress"]>;
 }> = (props) => {
-  const { data, error, refetch } = useQuery<{ address: Address[] }>(
-    GET_ADDRESS_PAGE,
-  );
+  const addRef = useRef<HTMLButtonElement>(null);
 
-  if (error) {
-    throw error;
-  }
+  useKey("+", () => {
+    addRef.current?.click();
+  });
 
   const [state, setState] = useLocalState<State>({
     open: false,
     current: undefined,
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
   });
+
+  const skip = () =>
+    Number(state.pagination.pageSize) * Number(state.pagination.current) -
+    Number(state.pagination.pageSize);
+
+  const { data, error, refetch, fetchMore } = useQuery<{
+    address: AddressPageResult;
+  }>(GET_ADDRESS_PAGE, {
+    variables: {
+      take: state.pagination.pageSize,
+      skip: skip(),
+    },
+  });
+
+  if (error) {
+    throw error;
+  }
 
   const columns: TableColumnsType = [
     {
@@ -84,11 +112,11 @@ export const AddressTable: FC<{
       <Flex align="baseline" justify="space-between">
         <Typography.Title>Address</Typography.Title>
         <Button
+          ref={addRef}
           icon={<PlusOutlined />}
           onClick={() => setState({ current: undefined, open: true })}
         />
       </Flex>
-
       {state.open ? (
         <AddressModal
           open={state.open}
@@ -96,6 +124,15 @@ export const AddressTable: FC<{
           closable
           destroyOnClose
           onSearch={props.onSearch}
+          onUpdate={async (address) => {
+            const upAddress = await props.onUpdate(address);
+
+            if (upAddress) {
+              setState({ open: false });
+              await refetch();
+            }
+            return upAddress;
+          }}
           onCreate={async (address) => {
             const newAddress = await props.onCreate(address);
             if (newAddress) {
@@ -109,12 +146,24 @@ export const AddressTable: FC<{
           }}
         />
       ) : null}
-
       <Table
         bordered
         rowKey={"id"}
         columns={columns}
-        dataSource={data?.address}
+        dataSource={data?.address?.list ?? []}
+        pagination={{
+          ...state.pagination,
+          total: data?.address.total,
+          onChange: async (current, pageSize) => {
+            setState({ pagination: { current, pageSize } });
+            await fetchMore({
+              variables: {
+                take: state.pagination.pageSize,
+                skip: skip(),
+              },
+            });
+          },
+        }}
       />
     </Card>
   );

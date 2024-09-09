@@ -23,6 +23,11 @@ type Address {
     address: String
 }
 
+type AddressPageResult {
+    list: [Address!]!
+    total: Int!
+}
+
 input CreateUserInput {
     email: String
     name: String
@@ -48,9 +53,14 @@ input CreateAddressInput {
     address: String!
 }
 
+input UpdateAddressInput {
+    id: Int!
+    address: String!
+}
+
 type Query {
     users(id: Int): [User]
-    address(id: Int, text: String): [Address]
+    address(take: Int!, skip: Int!): AddressPageResult
     device: [Device]
     searchAddress(text: String): [Address]
 }
@@ -59,6 +69,7 @@ type Mutation {
   createUser(user: CreateUserInput): User
   deleteUser(userId: Int): Int
   
-  createAddress(address: CreateAddressInput): Address
+  createAddress(address: CreateAddressInput!): Address
+  updateAddress(address: UpdateAddressInput!): Address
   deleteAddress(addressId: Int): Int
 }

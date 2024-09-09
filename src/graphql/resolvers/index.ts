@@ -7,14 +7,24 @@ export const resolvers: Resolvers = {
       return await prisma.user.findMany();
     },
     searchAddress: async (parent, args) => {
-      console.log("==>", args);
-
       return await prisma.address.findMany({
-        where: { address: { startsWith: args.text || "" } },
+        where: {
+          address: {
+            contains: args.text ?? "",
+          },
+        },
       });
     },
     address: async (parent, args) => {
-      return await prisma.address.findMany();
+      const [total, list] = await prisma.$transaction([
+        prisma.address.count(),
+        prisma.address.findMany({
+          take: args.take,
+          skip: args.skip,
+        }),
+      ]);
+
+      return { list, total };
     },
     device: async () => {
       return await prisma.device.findMany();
@@ -49,6 +59,35 @@ export const resolvers: Resolvers = {
       console.log("deleted", { user });
 
       return user.id;
+    },
+    createAddress: async (parent, args, ctx, info) => {
+      console.log("createAddress", { parent, args, ctx, info });
+      const address = await prisma.address.create({
+        data: {
+          address: args.address?.address,
+        },
+      });
+      return address;
+    },
+    updateAddress: async (parent, args, ctx, info) => {
+      console.log("createAddress", { parent, args, ctx, info });
+      const address = await prisma.address.update({
+        where: { id: Number(args.address.id) },
+        data: {
+          address: args.address.address,
+        },
+      });
+      return address;
+    },
+    deleteAddress: async (parent, args, ctx, info) => {
+      console.log("deleteAddrerss", { parent, args, ctx, info });
+
+      const address = await prisma.address.delete({
+        where: { id: Number(args.addressId) },
+      });
+      console.log("deleted", { address });
+
+      return address.id;
     },
   },
 };

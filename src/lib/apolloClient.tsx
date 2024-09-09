@@ -6,13 +6,13 @@ import {
   InMemoryCache,
 } from "@apollo/experimental-nextjs-app-support";
 
-import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
+// import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 
-if (process.env.NODE_ENV === "development") {
-  // Adds messages only in a dev environment
-  loadDevMessages();
-  loadErrorMessages();
-}
+// if (process.env.NODE_ENV === "development") {
+//   // Adds messages only in a dev environment
+//   loadDevMessages();
+//   loadErrorMessages();
+// }
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)

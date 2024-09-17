@@ -11,7 +11,7 @@
     "prisma:generate": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 npx --yes prisma generate",
     "prisma:pull": "npx prisma db pull",
     "prisma:push": "npx prisma db push",
-    "prisma:migrate:dev": "npx prisma migrate dev --name add_smid",
+    "prisma:migrate:dev": "npx prisma migrate dev --name add_device_date",
     "prisma:migrate:reset": "npx prisma migrate reset",
     "prisma:studio": "npx prisma studio",
     "codegen": "graphql-codegen --config src/graphql/codegen.ts",

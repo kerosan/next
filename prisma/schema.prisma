@@ -31,9 +31,11 @@ model Address {
 }
 
 model Device {
-  id           Int     @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   name         String?
-  initialValue Float   @default(0.0)
+  initialValue Float     @default(0.0)
+  startDate    DateTime
+  endDate      DateTime?
 }
 
 model Tariff {

@@ -5,24 +5,22 @@ import type {
   CreateAddressInput,
   Mutation,
   Query,
+  UpdateAddressInput,
 } from "@/graphql/resolvers-types";
 import { useLocalState } from "@/utils/useLocalState";
 import { Modal, Form, AutoComplete } from "antd";
 import type { AutoCompleteProps, ModalProps } from "antd";
 import { useEffect, type FC } from "react";
+import type { onCreate, onSearch, onUpdate } from "./action";
 
 const Field = Form.Item;
 
 export const AddressModal: FC<
   ModalProps & {
     address?: Address;
-    onSearch: (text: string) => Promise<Query["searchAddress"]>;
-    onCreate: (
-      address: CreateAddressInput,
-    ) => Promise<Mutation["createAddress"]>;
-    onUpdate: (
-      address: CreateAddressInput,
-    ) => Promise<Mutation["updateAddress"]>;
+    onSearch: typeof onSearch;
+    onCreate: typeof onCreate;
+    onUpdate: typeof onUpdate;
   }
 > = (props) => {
   const [form] = Form.useForm();

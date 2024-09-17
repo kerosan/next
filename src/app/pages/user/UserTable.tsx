@@ -1,6 +1,7 @@
 "use client";
 
-import type { Address } from "@prisma/client";
+import { UserModal } from "./UserModal";
+import type { User } from "@prisma/client";
 import {
   Button,
   Card,
@@ -14,29 +15,35 @@ import {
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { useRef, type FC } from "react";
 import { useLocalState } from "@/utils/useLocalState";
+import { GET_USUERS_PAGE } from "./query";
 import { useQuery } from "@apollo/client";
-import { GET_ADDRESS_PAGE } from "./query";
-import { AddressModal } from "./AddressModal";
-import type {
-  AddressPageResult,
-  Mutation,
-  Query,
-} from "@/graphql/resolvers-types";
+import type { Mutation, Query } from "@/graphql/resolvers-types";
+import type { onCreate, onDelete, onSearch } from "./action";
 import { useKey } from "react-use";
+import { skip } from "@/utils/pagination";
 
 type State = {
   open: boolean;
-  current?: Address;
+  current?: User;
   pagination: Pick<TablePaginationConfig, "current" | "pageSize">;
 };
 
-export const AddressTable: FC<{
-  onSearch: (text: string) => Promise<Query["searchAddress"]>;
-  onCreate: (address: Partial<Address>) => Promise<Mutation["createAddress"]>;
-  onUpdate: (address: Partial<Address>) => Promise<Mutation["updateAddress"]>;
-  onDelete: (addressId: string) => Promise<Mutation["deleteAddress"]>;
+export const UserTable: FC<{
+  onSearch: typeof onSearch;
+  onCreate: typeof onCreate;
+  onDelete: typeof onDelete;
 }> = (props) => {
   const addRef = useRef<HTMLButtonElement>(null);
+
+  const { data, error, refetch, fetchMore } = useQuery<{
+    users: Query["users"];
+  }>(GET_USUERS_PAGE, {
+    variables: { take: 10, skip: 0 },
+  });
+
+  if (error) {
+    throw error;
+  }
 
   useKey("+", () => {
     addRef.current?.click();
@@ -51,23 +58,6 @@ export const AddressTable: FC<{
     },
   });
 
-  const skip = () =>
-    Number(state.pagination.pageSize) * Number(state.pagination.current) -
-    Number(state.pagination.pageSize);
-
-  const { data, error, refetch, fetchMore } = useQuery<{
-    address: AddressPageResult;
-  }>(GET_ADDRESS_PAGE, {
-    variables: {
-      take: state.pagination.pageSize,
-      skip: skip(),
-    },
-  });
-
-  if (error) {
-    throw error;
-  }
-
   const columns: TableColumnsType = [
     {
       key: 0,
@@ -75,21 +65,50 @@ export const AddressTable: FC<{
       dataIndex: "id",
     },
     {
+      key: 1,
+      title: "Name",
+      dataIndex: "name",
+    },
+    {
+      key: 2,
+      title: "Phone",
+      dataIndex: "phone",
+    },
+    {
+      key: 3,
+      title: "Email",
+      dataIndex: "email",
+    },
+    {
       key: 4,
       title: "Address",
-      dataIndex: "address",
-      width: "90%",
+      // dataIndex: "address",
+      render: (_, row) => {
+        return row.address?.address;
+      },
+    },
+    {
+      key: 5,
+      title: "Device",
+      // dataIndex: "device",
+      render: (_, row) => {
+        return row.device?.name;
+      },
+    },
+    {
+      key: 5,
+      title: "Balance",
+      dataIndex: "balance",
     },
     {
       title: "operation",
       dataIndex: "operation",
-      width: "10%",
       render: (_, row) => (
         <>
           <Button
             icon={<EditOutlined />}
             onClick={() => {
-              setState({ open: true, current: row as Address });
+              setState({ open: true, current: row as User });
             }}
           />{" "}
           <Popconfirm
@@ -110,56 +129,49 @@ export const AddressTable: FC<{
   return (
     <Card>
       <Flex align="baseline" justify="space-between">
-        <Typography.Title>Address</Typography.Title>
+        <Typography.Title>Users</Typography.Title>
         <Button
           ref={addRef}
           icon={<PlusOutlined />}
           onClick={() => setState({ current: undefined, open: true })}
         />
       </Flex>
+
       {state.open ? (
-        <AddressModal
+        <UserModal
           open={state.open}
-          address={state.current}
+          user={state.current}
           closable
           destroyOnClose
           onSearch={props.onSearch}
-          onUpdate={async (address) => {
-            const upAddress = await props.onUpdate(address);
-
-            if (upAddress) {
+          onCreate={async (user) => {
+            const newUser = await props.onCreate(user);
+            if (newUser) {
               setState({ open: false });
               await refetch();
             }
-            return upAddress;
-          }}
-          onCreate={async (address) => {
-            const newAddress = await props.onCreate(address);
-            if (newAddress) {
-              setState({ open: false });
-              await refetch();
-            }
-            return newAddress;
+            return newUser;
           }}
           onCancel={() => {
             setState({ open: false, current: undefined });
           }}
         />
       ) : null}
+
       <Table
         bordered
         rowKey={"id"}
         columns={columns}
-        dataSource={data?.address?.list ?? []}
+        dataSource={data?.users?.list}
         pagination={{
           ...state.pagination,
-          total: data?.address.total,
+          total: data?.users?.total,
           onChange: async (current, pageSize) => {
             setState({ pagination: { current, pageSize } });
             await fetchMore({
               variables: {
                 take: state.pagination.pageSize,
-                skip: skip(),
+                skip: skip(state.pagination),
               },
             });
           },

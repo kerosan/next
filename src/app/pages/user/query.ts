@@ -1,22 +1,25 @@
 import { gql } from "@apollo/client";
 
 export const GET_USUERS_PAGE = gql`
-    query GetUsersPage {
-        users {
+    query GetUsersPage($take:Int!, $skip:Int!) {
+      users(take: $take, skip:$skip) {
+        list {
+          id
+          name
+          phone
+          email
+          address {
+            id
+            address
+          }
+          device {
             id
             name
-            phone
-            email
-            address {
-              id
-              address
-            }
-            device {
-                id
-                name
-            }
-            balance
-        }
+          }
+          balance
+          }
+        total
+      }
     }
 `;
 

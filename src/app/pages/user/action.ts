@@ -7,7 +7,7 @@ import {
   SEARCH_ADDRESS,
 } from "./query";
 
-export const onSearchAddress = async (text: string) => {
+export const onSearch = async (text: string) => {
   "use server";
   console.log("onSearchAddress", { text });
 
@@ -17,7 +17,7 @@ export const onSearchAddress = async (text: string) => {
   });
 };
 
-export const onCreateUser = async (user: Partial<User>) => {
+export const onCreate = async (user: Partial<User>) => {
   "use server";
   console.log("onCreateUser", { user });
 
@@ -28,7 +28,7 @@ export const onCreateUser = async (user: Partial<User>) => {
   });
 };
 
-export const onDeleteUser = async (userId: string) => {
+export const onDelete = async (userId: string) => {
   "use server";
   console.log("onDeleteUser", { userId });
 

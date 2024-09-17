@@ -14,20 +14,20 @@ export const Navigation = () => {
           Home
         </Link>
         <hr />
-        <Link href="/user" className="link">
+        <Link href="/pages/user" className="link">
           User
         </Link>
-        <Link href="/address" className="link">
+        <Link href="/pages/address" className="link">
           Address
         </Link>
-        <Link href="/device" className="link">
+        <Link href="/pages/device" className="link">
           Device
         </Link>
-        <Link href="/billing" className="link">
+        <Link href="/pages/billing" className="link">
           Billing
         </Link>
         <hr />
-        <Link href="/settings" className="link justify-end">
+        <Link href="/pages/settings" className="link justify-end">
           Settings
         </Link>
       </div>

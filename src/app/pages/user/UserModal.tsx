@@ -10,15 +10,16 @@ import { useLocalState } from "@/utils/useLocalState";
 import { Modal, Input, Form, AutoComplete } from "antd";
 import type { AutoCompleteProps, ModalProps } from "antd";
 import { useEffect, type FC } from "react";
-import type { onCreateUser, onSearchAddress } from "./action";
+import type { onCreate, onSearch } from "./action";
 
 const Field = Form.Item;
 
 export const UserModal: FC<
   ModalProps & {
     user?: User;
-    onSearch: typeof onSearchAddress;
-    onCreate: typeof onCreateUser;
+    onSearch: typeof onSearch;
+    onCreate: typeof onCreate;
+    // onUpdate: typeof onUpdate;
   }
 > = (props) => {
   const [form] = Form.useForm();

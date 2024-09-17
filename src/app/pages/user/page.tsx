@@ -9,16 +9,12 @@ import {
 import { UserTable } from "./UserTable";
 import { PreloadQuery, query, getClient } from "@/lib/apolloClient";
 import type { Address, User } from "@prisma/client";
-import { onCreateUser, onDeleteUser, onSearchAddress } from "./action";
+import { onCreate, onDelete, onSearch } from "./action";
 
 export default async function Page() {
   return (
     <Suspense fallback={<p>loading...</p>}>
-      <UserTable
-        onSearchAddress={onSearchAddress}
-        onDeleteUser={onDeleteUser}
-        onCreateUser={onCreateUser}
-      />
+      <UserTable onSearch={onSearch} onDelete={onDelete} onCreate={onCreate} />
     </Suspense>
   );
 }

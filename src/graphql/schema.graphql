@@ -10,12 +10,25 @@ type User {
     balance: Float
   }
 
+type UserPageResult {
+    list: [User!]!
+    total: Int!
+}
+
 input CreateUserInput {
     email: String
     name: String
     phone: String
     address: String
-    device: String
+    # device: String
+}
+
+input UpdateUserInput {
+    email: String
+    name: String
+    phone: String
+    address: String
+    # device: String
 }
 
 type Address {
@@ -28,27 +41,6 @@ type AddressPageResult {
     total: Int!
 }
 
-input CreateUserInput {
-    email: String
-    name: String
-    phone: String
-    # address: Address
-    # device: Device
-    # balance: Float
-    # address: String
-}
-
-type Device {
-    id: Int
-    name: String
-    initialValue: Float
-}
-
-input CreateDeviceInput {
-    name: String
-    initialValue: Float
-}
-
 input CreateAddressInput {
     address: String!
 }
@@ -58,18 +50,53 @@ input UpdateAddressInput {
     address: String!
 }
 
+type Device {
+    id: Int
+    name: String
+    initialValue: Float
+    startDate: DateTime!
+    endDate: DateTime
+}
+
+type DevicePageResult {
+    list: [Device!]!
+    total: Int!
+}
+
+input CreateDeviceInput {
+    name: String
+    initialValue: Float
+    startDate: DateTime!
+    endDate: DateTime
+}
+
+input UpdateDeviceInput {
+    id: Int
+    name: String
+    initialValue: Float
+    startDate: DateTime!
+    endDate: DateTime
+}
+
 type Query {
-    users(id: Int): [User]
+    users(take: Int!, skip: Int!): UserPageResult
     address(take: Int!, skip: Int!): AddressPageResult
-    device: [Device]
+    device(take: Int!, skip: Int!): DevicePageResult
     searchAddress(text: String): [Address]!
 }
 
 type Mutation {
   createUser(user: CreateUserInput): User
+  updateUser(user: UpdateUserInput): User
   deleteUser(userId: Int): Int
   
   createAddress(address: CreateAddressInput!): Address
   updateAddress(address: UpdateAddressInput!): Address
   deleteAddress(addressId: Int): Int
+  
+  createDevice(device: CreateDeviceInput!): Device
+  updateDevice(device: UpdateDeviceInput!): Device
+  deleteDevice(deviceId: Int): Int
 }
+
+scalar DateTime

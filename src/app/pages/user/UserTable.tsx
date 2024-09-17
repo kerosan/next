@@ -17,8 +17,14 @@ import { useRef, type FC } from "react";
 import { useLocalState } from "@/utils/useLocalState";
 import { GET_USUERS_PAGE } from "./query";
 import { useQuery } from "@apollo/client";
-import type { Mutation, Query } from "@/graphql/resolvers-types";
-import type { onCreate, onDelete, onSearch } from "./action";
+import type { Query } from "@/graphql/resolvers-types";
+import type {
+  onCreate,
+  onDelete,
+  onSearchAddress,
+  onSearchDevice,
+  onUpdate,
+} from "./action";
 import { useKey } from "react-use";
 import { skip } from "@/utils/pagination";
 
@@ -29,25 +35,13 @@ type State = {
 };
 
 export const UserTable: FC<{
-  onSearch: typeof onSearch;
+  onSearchAddress: typeof onSearchAddress;
+  onSearchDevice: typeof onSearchDevice;
   onCreate: typeof onCreate;
+  onUpdate: typeof onUpdate;
   onDelete: typeof onDelete;
 }> = (props) => {
   const addRef = useRef<HTMLButtonElement>(null);
-
-  const { data, error, refetch, fetchMore } = useQuery<{
-    users: Query["users"];
-  }>(GET_USUERS_PAGE, {
-    variables: { take: 10, skip: 0 },
-  });
-
-  if (error) {
-    throw error;
-  }
-
-  useKey("+", () => {
-    addRef.current?.click();
-  });
 
   const [state, setState] = useLocalState<State>({
     open: false,
@@ -56,6 +50,23 @@ export const UserTable: FC<{
       current: 1,
       pageSize: 10,
     },
+  });
+
+  const { data, error, refetch, fetchMore } = useQuery<{
+    users: Query["users"];
+  }>(GET_USUERS_PAGE, {
+    variables: {
+      take: state.pagination.pageSize,
+      skip: skip(state.pagination),
+    },
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  useKey("+", () => {
+    addRef.current?.click();
   });
 
   const columns: TableColumnsType = [
@@ -143,12 +154,27 @@ export const UserTable: FC<{
           user={state.current}
           closable
           destroyOnClose
-          onSearch={props.onSearch}
+          onSearchAddress={props.onSearchAddress}
+          onSearchDevice={props.onSearchDevice}
           onCreate={async (user) => {
             const newUser = await props.onCreate(user);
             if (newUser) {
               setState({ open: false });
-              await refetch();
+              await refetch({
+                take: state.pagination.pageSize,
+                skip: skip(state.pagination),
+              });
+            }
+            return newUser;
+          }}
+          onUpdate={async (user) => {
+            const newUser = await props.onUpdate(user);
+            if (newUser) {
+              setState({ open: false });
+              await refetch({
+                take: state.pagination.pageSize,
+                skip: skip(state.pagination),
+              });
             }
             return newUser;
           }}

@@ -32,9 +32,32 @@ export const SEARCH_ADDRESS = gql`
   }
 `;
 
+export const SEARCH_DEVICE = gql`
+  query SearchDevice($text: String){
+    searchDevice(text: $text) {
+      id
+      name
+      initialValue
+      startDate
+      endDate
+    }
+  }
+`;
+
 export const CREATE_USER = gql`
   mutation CreateUser($user: CreateUserInput){
     createUser(user: $user) {
+      id
+      name
+      phone
+      email
+    }
+  }
+`;
+
+export const UPDATE_USER = gql`
+  mutation UpdateUser($user: UpdateUserInput){
+    updateUser(user: $user) {
       id
       name
       phone

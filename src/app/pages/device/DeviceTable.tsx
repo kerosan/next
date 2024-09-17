@@ -15,12 +15,7 @@ import { useRef, type FC } from "react";
 import { useLocalState } from "@/utils/useLocalState";
 import { useQuery } from "@apollo/client";
 import { DeviceModal } from "./DeviceModal";
-import type {
-  Device,
-  DevicePageResult,
-  Mutation,
-  Query,
-} from "@/graphql/resolvers-types";
+import type { Device, DevicePageResult } from "@/graphql/resolvers-types";
 import { useKey } from "react-use";
 import { skip } from "@/utils/pagination";
 import { GET_DEVICE_PAGE } from "./query";
@@ -115,18 +110,9 @@ export const DeviceTable: FC<{
           <Button
             icon={<EditOutlined />}
             onClick={() => {
-              const r = row as Device;
-              setState({
+              const r = setState({
                 open: true,
-                current: {
-                  ...r,
-                  startDate: dayjs(r.startDate).isValid()
-                    ? dayjs(r.startDate)
-                    : undefined,
-                  endDate: dayjs(r.endDate).isValid()
-                    ? dayjs(r.endDate)
-                    : undefined,
-                },
+                current: row as Device,
               });
             }}
           />{" "}
@@ -135,7 +121,10 @@ export const DeviceTable: FC<{
             onConfirm={async () => {
               console.log("onConfirm", { row });
               await props.onDelete(row.id);
-              await refetch();
+              await refetch({
+                take: state.pagination.pageSize,
+                skip: skip(state.pagination),
+              });
             }}
           >
             <Button icon={<DeleteOutlined />} />
@@ -166,7 +155,10 @@ export const DeviceTable: FC<{
 
             if (upDevice) {
               setState({ open: false });
-              await refetch();
+              await refetch({
+                take: state.pagination.pageSize,
+                skip: skip(state.pagination),
+              });
             }
             return upDevice;
           }}
@@ -174,7 +166,10 @@ export const DeviceTable: FC<{
             const newDevice = await props.onCreate(device);
             if (newDevice) {
               setState({ open: false });
-              await refetch();
+              await refetch({
+                take: state.pagination.pageSize,
+                skip: skip(state.pagination),
+              });
             }
             return newDevice;
           }}

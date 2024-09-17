@@ -6,7 +6,6 @@ export default async function Page() {
   return (
     <Suspense fallback={<p>loading...</p>}>
       <DeviceTable
-        // onSearch={onSearch}
         onDelete={onDelete}
         onCreate={onCreate}
         onUpdate={onUpdate}

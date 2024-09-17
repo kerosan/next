@@ -1,16 +1,10 @@
 "use client";
 
-import type {
-  Device,
-  CreateDeviceInput,
-  Mutation,
-  Query,
-  UpdateDeviceInput,
-} from "@/graphql/resolvers-types";
 import { Modal, Form, Input, DatePicker, Row, Col, InputNumber } from "antd";
 import type { ModalProps } from "antd";
 import { useEffect, type FC } from "react";
 import type { onCreate, onUpdate } from "./action";
+import type { Device } from "@/graphql/resolvers-types";
 
 const Field = Form.Item;
 
@@ -42,11 +36,23 @@ export const DeviceModal: FC<
           name="device_form_in_modal"
           initialValues={{ ...props.device }}
           clearOnDestroy
-          onFinish={async (data) => {
+          onFieldsChange={console.log}
+          onFinish={async (data: Partial<Device>) => {
             if (props.device) {
-              await props.onUpdate({ id: props.device.id, ...data });
+              await props.onUpdate({
+                id: props.device.id,
+                name: data.name,
+                initialValue: data.initialValue,
+                startDate: data.startDate,
+                endDate: data.endDate,
+              });
             } else {
-              await props.onCreate(data);
+              await props.onCreate({
+                name: data.name,
+                initialValue: data.initialValue,
+                startDate: data.startDate,
+                endDate: data.endDate,
+              });
             }
           }}
         >

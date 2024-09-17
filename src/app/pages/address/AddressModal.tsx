@@ -1,12 +1,6 @@
 "use client";
 
-import type {
-  Address,
-  CreateAddressInput,
-  Mutation,
-  Query,
-  UpdateAddressInput,
-} from "@/graphql/resolvers-types";
+import type { Address } from "@/graphql/resolvers-types";
 import { useLocalState } from "@/utils/useLocalState";
 import { Modal, Form, AutoComplete } from "antd";
 import type { AutoCompleteProps, ModalProps } from "antd";

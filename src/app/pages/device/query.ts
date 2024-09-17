@@ -15,15 +15,6 @@ export const GET_DEVICE_PAGE = gql`
   }
 `;
 
-// export const SEARCH_DEVICE = gql`
-//   query SearchDevice($text: String){
-//     searchDevice(text: $text) {
-//       id
-//       device
-//     }
-//   }
-// `;
-
 export const GET_DEVICE = gql`
   query getDevice($id: ID!){
     device(id: $id) {
@@ -40,6 +31,8 @@ export const CREATE_DEVICE = gql`
       id
       name
       initialValue
+      startDate
+      endDate
     }
   }
 `;
@@ -50,6 +43,8 @@ export const UPDATE_DEVICE = gql`
       id
       name
       initialValue
+      startDate
+      endDate
     }
   }
 `;

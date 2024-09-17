@@ -1,5 +1,6 @@
 type User {
     id: Int
+    smId: String
     email: String
     name: String
     phone: String
@@ -16,20 +17,26 @@ type UserPageResult {
 }
 
 input CreateUserInput {
+    smId: String
     email: String
     name: String
     phone: String
-    address: String
+    # address: String
+    addressId: Int
     # device: String
+    deviceId: Int
 }
 
 input UpdateUserInput {
     id: Int!
+    smId: String
     email: String
     name: String
     phone: String
-    address: String
+    # address: String
+    addressId: Int
     # device: String
+    deviceId: Int
 }
 
 type Address {
@@ -55,8 +62,8 @@ type Device {
     id: Int!
     name: String
     initialValue: Float!
-    startDate: DateTime!
-    endDate: DateTime
+    startDate: String!
+    endDate: String
 }
 
 type DevicePageResult {
@@ -66,17 +73,17 @@ type DevicePageResult {
 
 input CreateDeviceInput {
     name: String
-    initialValue: Float
-    startDate: DateTime!
-    endDate: DateTime
+    initialValue: Float!
+    startDate: String!
+    endDate: String
 }
 
 input UpdateDeviceInput {
     id: Int!
     name: String
-    initialValue: Float
-    startDate: DateTime!
-    endDate: DateTime
+    initialValue: Float!
+    startDate: String!
+    endDate: String
 }
 
 type Query {
@@ -84,6 +91,7 @@ type Query {
     address(take: Int!, skip: Int!): AddressPageResult
     device(take: Int!, skip: Int!): DevicePageResult
     searchAddress(text: String): [Address]!
+    searchDevice(text: String): [Device]!
 }
 
 type Mutation {
@@ -99,5 +107,3 @@ type Mutation {
   updateDevice(device: UpdateDeviceInput!): Device
   deleteDevice(deviceId: Int): Int
 }
-
-scalar DateTime

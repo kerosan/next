@@ -1,36 +1,45 @@
 "use client";
 
-import type {
-  User,
-  Query,
-  CreateUserInput,
-  Mutation,
-} from "@/graphql/resolvers-types";
+import type { User } from "@/graphql/resolvers-types";
 import { useLocalState } from "@/utils/useLocalState";
 import { Modal, Input, Form, AutoComplete } from "antd";
 import type { AutoCompleteProps, ModalProps } from "antd";
 import { useEffect, type FC } from "react";
-import type { onCreate, onSearch } from "./action";
+import type {
+  onCreate,
+  onUpdate,
+  onSearchAddress,
+  onSearchDevice,
+} from "./action";
 
 const Field = Form.Item;
 
 export const UserModal: FC<
   ModalProps & {
     user?: User;
-    onSearch: typeof onSearch;
+    onSearchAddress: typeof onSearchAddress;
+    onSearchDevice: typeof onSearchDevice;
     onCreate: typeof onCreate;
-    // onUpdate: typeof onUpdate;
+    onUpdate: typeof onUpdate;
   }
 > = (props) => {
   const [form] = Form.useForm();
 
   const [state, setState] = useLocalState<{
-    options: AutoCompleteProps["options"];
+    addressOptions: AutoCompleteProps["options"];
+    deviceOptions: AutoCompleteProps["options"];
   }>({
-    options: props.user
+    addressOptions: props.user
       ? [{ ...props.user.address }].map((i) => ({
           title: i.address ?? "",
-          value: i.id,
+          value: i.id?.toString(),
+          id: i.id,
+        }))
+      : [],
+    deviceOptions: props.user
+      ? [{ ...props.user.device }].map((i) => ({
+          title: i.name ?? "",
+          value: i.id?.toString(),
           id: i.id,
         }))
       : [],
@@ -43,17 +52,31 @@ export const UserModal: FC<
   }, [form, props.open, props.user]);
 
   useEffect(() => {
-    if (!form.isFieldsTouched(["address"])) {
+    if (
+      !form.isFieldsTouched(["address"]) ||
+      !form.isFieldsTouched(["device"])
+    ) {
       form.setFieldValue(
         "address",
-        state.options?.find(
+        state.addressOptions?.find(
           (o) => Number(o.id) === Number(props.user?.address?.id),
         )?.title,
       );
-    }
-  }, [form, props.user?.address?.id, state.options]);
 
-  console.log({ state });
+      form.setFieldValue(
+        "device",
+        state.deviceOptions?.find(
+          (o) => Number(o.id) === Number(props.user?.device?.id),
+        )?.title,
+      );
+    }
+  }, [
+    form,
+    props.user?.address?.id,
+    props.user?.device?.id,
+    state.addressOptions,
+    state.deviceOptions,
+  ]);
 
   return (
     <Modal
@@ -68,12 +91,21 @@ export const UserModal: FC<
           name="user_form_in_modal"
           initialValues={{ ...props.user }}
           clearOnDestroy
-          onFieldsChange={(a) => console.log("onFieldsChange", { a })}
-          onFinishFailed={(b) => console.log("onFinishFailed", { b })}
-          onValuesChange={(c) => console.log("onValuesChange", { c })}
-          onFinish={async (d) => {
-            const user = await props.onCreate(d);
-            console.log("onFinish", { d, user });
+          onFinish={async (user: Partial<User>) => {
+            console.log("onFinish", { user });
+
+            if (props.user) {
+              await props.onUpdate({
+                id: Number(props.user.id),
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                addressId: Number(user.addressId),
+                deviceId: Number(user.deviceId),
+              });
+            } else {
+              await props.onCreate(user);
+            }
           }}
         >
           {dom}
@@ -90,16 +122,16 @@ export const UserModal: FC<
         <Input />
       </Field>
       <Field label="AddressId" name="addressId" hidden>
-        <Input hidden />
+        <Input />
       </Field>
       <Field label="Address" name="address" colon>
         <AutoComplete
           allowClear
           onFocus={async () => {
             if (!form.getFieldValue("address")) {
-              const { data } = await props.onSearch("");
+              const { data } = await props.onSearchAddress("");
               setState({
-                options: data.searchAddress?.map((i) => ({
+                addressOptions: data.searchAddress?.map((i) => ({
                   title: i?.address ?? "",
                   value: i?.id?.toString(),
                 })),
@@ -110,25 +142,54 @@ export const UserModal: FC<
             form.setFieldValue("address", data.title);
             form.setFieldValue("addressId", data.value);
           }}
-          optionRender={({ data }) => <div key={data.id}>{data.title}</div>}
           onSearch={async (text) => {
-            const { data } = await props.onSearch(text);
+            const { data } = await props.onSearchAddress(text);
 
             setState({
-              options: data.searchAddress?.map((i) => ({
+              addressOptions: data.searchAddress?.map((i) => ({
                 title: i?.address ?? "",
                 value: i?.id?.toString(),
               })),
             });
           }}
-          options={state.options}
+          optionRender={({ data }) => <div key={data.id}>{data.title}</div>}
+          options={state.addressOptions}
         />
       </Field>
       <Field label="DeviceId" name="deviceId" hidden>
-        <Input hidden />
+        <Input />
       </Field>
       <Field label="Device" name="device">
-        <AutoComplete />
+        <AutoComplete
+          allowClear
+          onFocus={async () => {
+            if (!form.getFieldValue("device")) {
+              const { data } = await props.onSearchDevice("");
+              setState({
+                deviceOptions: data.searchDevice?.map((i) => ({
+                  title: i?.name ?? "",
+                  value: i?.id?.toString(),
+                })),
+              });
+            }
+          }}
+          onSelect={(id, data) => {
+            form.setFieldValue("device", data.title);
+            form.setFieldValue("deviceId", data.value);
+          }}
+          onSearch={async (text) => {
+            const { data } = await props.onSearchDevice(text);
+
+            setState({
+              deviceOptions: data.searchDevice?.map((i) => ({
+                title: i?.name ?? "",
+                value: i?.id?.toString(),
+              })),
+            });
+          }}
+          optionRender={({ data }) => <div key={data.id}>{data.title}</div>}
+          options={state.deviceOptions}
+        />
       </Field>
     </Modal>
   );

@@ -17,11 +17,7 @@ import { useLocalState } from "@/utils/useLocalState";
 import { useQuery } from "@apollo/client";
 import { GET_ADDRESS_PAGE } from "./query";
 import { AddressModal } from "./AddressModal";
-import type {
-  AddressPageResult,
-  Mutation,
-  Query,
-} from "@/graphql/resolvers-types";
+import type { AddressPageResult } from "@/graphql/resolvers-types";
 import { useKey } from "react-use";
 import { skip } from "@/utils/pagination";
 import type { onCreate, onDelete, onSearch, onUpdate } from "./action";

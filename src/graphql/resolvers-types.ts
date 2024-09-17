@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import { GraphQLResolveInfo } from 'graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -14,7 +14,6 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  DateTime: { input: any; output: any; }
 };
 
 export type Address = {
@@ -34,26 +33,28 @@ export type CreateAddressInput = {
 };
 
 export type CreateDeviceInput = {
-  endDate?: InputMaybe<Scalars['DateTime']['input']>;
-  initialValue?: InputMaybe<Scalars['Float']['input']>;
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  initialValue: Scalars['Float']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
-  startDate: Scalars['DateTime']['input'];
+  startDate: Scalars['String']['input'];
 };
 
 export type CreateUserInput = {
-  address?: InputMaybe<Scalars['String']['input']>;
+  addressId?: InputMaybe<Scalars['Int']['input']>;
+  deviceId?: InputMaybe<Scalars['Int']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
+  smId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Device = {
   __typename?: 'Device';
-  endDate?: Maybe<Scalars['DateTime']['output']>;
+  endDate?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   initialValue: Scalars['Float']['output'];
   name?: Maybe<Scalars['String']['output']>;
-  startDate: Scalars['DateTime']['output'];
+  startDate: Scalars['String']['output'];
 };
 
 export type DevicePageResult = {
@@ -125,6 +126,7 @@ export type Query = {
   address?: Maybe<AddressPageResult>;
   device?: Maybe<DevicePageResult>;
   searchAddress: Array<Maybe<Address>>;
+  searchDevice: Array<Maybe<Device>>;
   users?: Maybe<UserPageResult>;
 };
 
@@ -146,6 +148,11 @@ export type QuerySearchAddressArgs = {
 };
 
 
+export type QuerySearchDeviceArgs = {
+  text?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryUsersArgs = {
   skip: Scalars['Int']['input'];
   take: Scalars['Int']['input'];
@@ -157,19 +164,21 @@ export type UpdateAddressInput = {
 };
 
 export type UpdateDeviceInput = {
-  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  endDate?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
-  initialValue?: InputMaybe<Scalars['Float']['input']>;
+  initialValue: Scalars['Float']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
-  startDate: Scalars['DateTime']['input'];
+  startDate: Scalars['String']['input'];
 };
 
 export type UpdateUserInput = {
-  address?: InputMaybe<Scalars['String']['input']>;
+  addressId?: InputMaybe<Scalars['Int']['input']>;
+  deviceId?: InputMaybe<Scalars['Int']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
+  smId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type User = {
@@ -183,6 +192,7 @@ export type User = {
   id?: Maybe<Scalars['Int']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   phone?: Maybe<Scalars['String']['output']>;
+  smId?: Maybe<Scalars['String']['output']>;
 };
 
 export type UserPageResult = {
@@ -269,7 +279,6 @@ export type ResolversTypes = ResolversObject<{
   CreateAddressInput: CreateAddressInput;
   CreateDeviceInput: CreateDeviceInput;
   CreateUserInput: CreateUserInput;
-  DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   Device: ResolverTypeWrapper<Device>;
   DevicePageResult: ResolverTypeWrapper<DevicePageResult>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
@@ -292,7 +301,6 @@ export type ResolversParentTypes = ResolversObject<{
   CreateAddressInput: CreateAddressInput;
   CreateDeviceInput: CreateDeviceInput;
   CreateUserInput: CreateUserInput;
-  DateTime: Scalars['DateTime']['output'];
   Device: Device;
   DevicePageResult: DevicePageResult;
   Float: Scalars['Float']['output'];
@@ -319,16 +327,12 @@ export type AddressPageResultResolvers<ContextType = any, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
-  name: 'DateTime';
-}
-
 export type DeviceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Device'] = ResolversParentTypes['Device']> = ResolversObject<{
-  endDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  endDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   initialValue?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  startDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  startDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -354,6 +358,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   address?: Resolver<Maybe<ResolversTypes['AddressPageResult']>, ParentType, ContextType, RequireFields<QueryAddressArgs, 'skip' | 'take'>>;
   device?: Resolver<Maybe<ResolversTypes['DevicePageResult']>, ParentType, ContextType, RequireFields<QueryDeviceArgs, 'skip' | 'take'>>;
   searchAddress?: Resolver<Array<Maybe<ResolversTypes['Address']>>, ParentType, ContextType, Partial<QuerySearchAddressArgs>>;
+  searchDevice?: Resolver<Array<Maybe<ResolversTypes['Device']>>, ParentType, ContextType, Partial<QuerySearchDeviceArgs>>;
   users?: Resolver<Maybe<ResolversTypes['UserPageResult']>, ParentType, ContextType, RequireFields<QueryUsersArgs, 'skip' | 'take'>>;
 }>;
 
@@ -367,6 +372,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  smId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -379,7 +385,6 @@ export type UserPageResultResolvers<ContextType = any, ParentType extends Resolv
 export type Resolvers<ContextType = any> = ResolversObject<{
   Address?: AddressResolvers<ContextType>;
   AddressPageResult?: AddressPageResultResolvers<ContextType>;
-  DateTime?: GraphQLScalarType;
   Device?: DeviceResolvers<ContextType>;
   DevicePageResult?: DevicePageResultResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;

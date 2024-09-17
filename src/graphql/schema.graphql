@@ -24,6 +24,7 @@ input CreateUserInput {
 }
 
 input UpdateUserInput {
+    id: Int!
     email: String
     name: String
     phone: String
@@ -51,9 +52,9 @@ input UpdateAddressInput {
 }
 
 type Device {
-    id: Int
+    id: Int!
     name: String
-    initialValue: Float
+    initialValue: Float!
     startDate: DateTime!
     endDate: DateTime
 }
@@ -71,7 +72,7 @@ input CreateDeviceInput {
 }
 
 input UpdateDeviceInput {
-    id: Int
+    id: Int!
     name: String
     initialValue: Float
     startDate: DateTime!

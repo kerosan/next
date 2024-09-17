@@ -50,8 +50,8 @@ export type CreateUserInput = {
 export type Device = {
   __typename?: 'Device';
   endDate?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['Int']['output']>;
-  initialValue?: Maybe<Scalars['Float']['output']>;
+  id: Scalars['Int']['output'];
+  initialValue: Scalars['Float']['output'];
   name?: Maybe<Scalars['String']['output']>;
   startDate: Scalars['DateTime']['output'];
 };
@@ -158,7 +158,7 @@ export type UpdateAddressInput = {
 
 export type UpdateDeviceInput = {
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['Int']['input']>;
+  id: Scalars['Int']['input'];
   initialValue?: InputMaybe<Scalars['Float']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   startDate: Scalars['DateTime']['input'];
@@ -167,6 +167,7 @@ export type UpdateDeviceInput = {
 export type UpdateUserInput = {
   address?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['Int']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
 };
@@ -324,8 +325,8 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 
 export type DeviceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Device'] = ResolversParentTypes['Device']> = ResolversObject<{
   endDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  initialValue?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  initialValue?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   startDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

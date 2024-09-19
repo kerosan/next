@@ -86,10 +86,35 @@ input UpdateDeviceInput {
     endDate: String
 }
 
+type Billing {
+  id: Int!  
+  userId: Int!
+  user: User!
+  payment: Float!
+  date: String!
+}
+
+type BillingPageResult {
+    list: [Billing!]!
+    total: Int!
+}
+
+input CreateBillingInput {
+  userId: Int!
+  payment: Float!
+}
+
+input UpdateBillingInput {
+  id: Int!
+  userId: Int!
+  payment: Float!
+}
+
 type Query {
-    users(take: Int!, skip: Int!): UserPageResult
     address(take: Int!, skip: Int!): AddressPageResult
+    billing(take: Int!, skip: Int!): BillingPageResult
     device(take: Int!, skip: Int!): DevicePageResult
+    users(take: Int!, skip: Int!): UserPageResult
     searchAddress(text: String): [Address]!
     searchDevice(text: String): [Device]!
 }
@@ -106,4 +131,8 @@ type Mutation {
   createDevice(device: CreateDeviceInput!): Device
   updateDevice(device: UpdateDeviceInput!): Device
   deleteDevice(deviceId: Int): Int
+  
+  createBilling(billing: CreateBillingInput!): Billing
+  updateBilling(billing: UpdateBillingInput!): Billing
+  deleteBilling(billingId: Int): Int
 }

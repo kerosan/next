@@ -28,8 +28,28 @@ export type AddressPageResult = {
   total: Scalars['Int']['output'];
 };
 
+export type Billing = {
+  __typename?: 'Billing';
+  date: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  payment: Scalars['Float']['output'];
+  user: User;
+  userId: Scalars['Int']['output'];
+};
+
+export type BillingPageResult = {
+  __typename?: 'BillingPageResult';
+  list: Array<Billing>;
+  total: Scalars['Int']['output'];
+};
+
 export type CreateAddressInput = {
   address: Scalars['String']['input'];
+};
+
+export type CreateBillingInput = {
+  payment: Scalars['Float']['input'];
+  userId: Scalars['Int']['input'];
 };
 
 export type CreateDeviceInput = {
@@ -66,12 +86,15 @@ export type DevicePageResult = {
 export type Mutation = {
   __typename?: 'Mutation';
   createAddress?: Maybe<Address>;
+  createBilling?: Maybe<Billing>;
   createDevice?: Maybe<Device>;
   createUser?: Maybe<User>;
   deleteAddress?: Maybe<Scalars['Int']['output']>;
+  deleteBilling?: Maybe<Scalars['Int']['output']>;
   deleteDevice?: Maybe<Scalars['Int']['output']>;
   deleteUser?: Maybe<Scalars['Int']['output']>;
   updateAddress?: Maybe<Address>;
+  updateBilling?: Maybe<Billing>;
   updateDevice?: Maybe<Device>;
   updateUser?: Maybe<User>;
 };
@@ -79,6 +102,11 @@ export type Mutation = {
 
 export type MutationCreateAddressArgs = {
   address: CreateAddressInput;
+};
+
+
+export type MutationCreateBillingArgs = {
+  billing: CreateBillingInput;
 };
 
 
@@ -97,6 +125,11 @@ export type MutationDeleteAddressArgs = {
 };
 
 
+export type MutationDeleteBillingArgs = {
+  billingId?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type MutationDeleteDeviceArgs = {
   deviceId?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -112,6 +145,11 @@ export type MutationUpdateAddressArgs = {
 };
 
 
+export type MutationUpdateBillingArgs = {
+  billing: UpdateBillingInput;
+};
+
+
 export type MutationUpdateDeviceArgs = {
   device: UpdateDeviceInput;
 };
@@ -124,6 +162,7 @@ export type MutationUpdateUserArgs = {
 export type Query = {
   __typename?: 'Query';
   address?: Maybe<AddressPageResult>;
+  billing?: Maybe<BillingPageResult>;
   device?: Maybe<DevicePageResult>;
   searchAddress: Array<Maybe<Address>>;
   searchDevice: Array<Maybe<Device>>;
@@ -132,6 +171,12 @@ export type Query = {
 
 
 export type QueryAddressArgs = {
+  skip: Scalars['Int']['input'];
+  take: Scalars['Int']['input'];
+};
+
+
+export type QueryBillingArgs = {
   skip: Scalars['Int']['input'];
   take: Scalars['Int']['input'];
 };
@@ -161,6 +206,12 @@ export type QueryUsersArgs = {
 export type UpdateAddressInput = {
   address: Scalars['String']['input'];
   id: Scalars['Int']['input'];
+};
+
+export type UpdateBillingInput = {
+  id: Scalars['Int']['input'];
+  payment: Scalars['Float']['input'];
+  userId: Scalars['Int']['input'];
 };
 
 export type UpdateDeviceInput = {
@@ -275,8 +326,11 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = ResolversObject<{
   Address: ResolverTypeWrapper<Address>;
   AddressPageResult: ResolverTypeWrapper<AddressPageResult>;
+  Billing: ResolverTypeWrapper<Billing>;
+  BillingPageResult: ResolverTypeWrapper<BillingPageResult>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   CreateAddressInput: CreateAddressInput;
+  CreateBillingInput: CreateBillingInput;
   CreateDeviceInput: CreateDeviceInput;
   CreateUserInput: CreateUserInput;
   Device: ResolverTypeWrapper<Device>;
@@ -287,6 +341,7 @@ export type ResolversTypes = ResolversObject<{
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   UpdateAddressInput: UpdateAddressInput;
+  UpdateBillingInput: UpdateBillingInput;
   UpdateDeviceInput: UpdateDeviceInput;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
@@ -297,8 +352,11 @@ export type ResolversTypes = ResolversObject<{
 export type ResolversParentTypes = ResolversObject<{
   Address: Address;
   AddressPageResult: AddressPageResult;
+  Billing: Billing;
+  BillingPageResult: BillingPageResult;
   Boolean: Scalars['Boolean']['output'];
   CreateAddressInput: CreateAddressInput;
+  CreateBillingInput: CreateBillingInput;
   CreateDeviceInput: CreateDeviceInput;
   CreateUserInput: CreateUserInput;
   Device: Device;
@@ -309,6 +367,7 @@ export type ResolversParentTypes = ResolversObject<{
   Query: {};
   String: Scalars['String']['output'];
   UpdateAddressInput: UpdateAddressInput;
+  UpdateBillingInput: UpdateBillingInput;
   UpdateDeviceInput: UpdateDeviceInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
@@ -323,6 +382,21 @@ export type AddressResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type AddressPageResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['AddressPageResult'] = ResolversParentTypes['AddressPageResult']> = ResolversObject<{
   list?: Resolver<Array<ResolversTypes['Address']>, ParentType, ContextType>;
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type BillingResolvers<ContextType = any, ParentType extends ResolversParentTypes['Billing'] = ResolversParentTypes['Billing']> = ResolversObject<{
+  date?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  payment?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type BillingPageResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['BillingPageResult'] = ResolversParentTypes['BillingPageResult']> = ResolversObject<{
+  list?: Resolver<Array<ResolversTypes['Billing']>, ParentType, ContextType>;
   total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -344,18 +418,22 @@ export type DevicePageResultResolvers<ContextType = any, ParentType extends Reso
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   createAddress?: Resolver<Maybe<ResolversTypes['Address']>, ParentType, ContextType, RequireFields<MutationCreateAddressArgs, 'address'>>;
+  createBilling?: Resolver<Maybe<ResolversTypes['Billing']>, ParentType, ContextType, RequireFields<MutationCreateBillingArgs, 'billing'>>;
   createDevice?: Resolver<Maybe<ResolversTypes['Device']>, ParentType, ContextType, RequireFields<MutationCreateDeviceArgs, 'device'>>;
   createUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<MutationCreateUserArgs>>;
   deleteAddress?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<MutationDeleteAddressArgs>>;
+  deleteBilling?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<MutationDeleteBillingArgs>>;
   deleteDevice?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<MutationDeleteDeviceArgs>>;
   deleteUser?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<MutationDeleteUserArgs>>;
   updateAddress?: Resolver<Maybe<ResolversTypes['Address']>, ParentType, ContextType, RequireFields<MutationUpdateAddressArgs, 'address'>>;
+  updateBilling?: Resolver<Maybe<ResolversTypes['Billing']>, ParentType, ContextType, RequireFields<MutationUpdateBillingArgs, 'billing'>>;
   updateDevice?: Resolver<Maybe<ResolversTypes['Device']>, ParentType, ContextType, RequireFields<MutationUpdateDeviceArgs, 'device'>>;
   updateUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<MutationUpdateUserArgs>>;
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   address?: Resolver<Maybe<ResolversTypes['AddressPageResult']>, ParentType, ContextType, RequireFields<QueryAddressArgs, 'skip' | 'take'>>;
+  billing?: Resolver<Maybe<ResolversTypes['BillingPageResult']>, ParentType, ContextType, RequireFields<QueryBillingArgs, 'skip' | 'take'>>;
   device?: Resolver<Maybe<ResolversTypes['DevicePageResult']>, ParentType, ContextType, RequireFields<QueryDeviceArgs, 'skip' | 'take'>>;
   searchAddress?: Resolver<Array<Maybe<ResolversTypes['Address']>>, ParentType, ContextType, Partial<QuerySearchAddressArgs>>;
   searchDevice?: Resolver<Array<Maybe<ResolversTypes['Device']>>, ParentType, ContextType, Partial<QuerySearchDeviceArgs>>;
@@ -385,6 +463,8 @@ export type UserPageResultResolvers<ContextType = any, ParentType extends Resolv
 export type Resolvers<ContextType = any> = ResolversObject<{
   Address?: AddressResolvers<ContextType>;
   AddressPageResult?: AddressPageResultResolvers<ContextType>;
+  Billing?: BillingResolvers<ContextType>;
+  BillingPageResult?: BillingPageResultResolvers<ContextType>;
   Device?: DeviceResolvers<ContextType>;
   DevicePageResult?: DevicePageResultResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;

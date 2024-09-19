@@ -5,14 +5,14 @@ import { useLocalState } from "@/utils/useLocalState";
 import { Modal, Form, AutoComplete } from "antd";
 import type { AutoCompleteProps, ModalProps } from "antd";
 import { useEffect, type FC } from "react";
-import type { onCreate, onSearch, onUpdate } from "./action";
+import type { onCreate, onSearchAddress, onUpdate } from "./action";
 
 const Field = Form.Item;
 
 export const AddressModal: FC<
   ModalProps & {
     address?: Address;
-    onSearch: typeof onSearch;
+    onSearchAddress: typeof onSearchAddress;
     onCreate: typeof onCreate;
     onUpdate: typeof onUpdate;
   }
@@ -20,9 +20,9 @@ export const AddressModal: FC<
   const [form] = Form.useForm();
 
   const [state, setState] = useLocalState<{
-    options: AutoCompleteProps["options"];
+    addressOptions: AutoCompleteProps["options"];
   }>({
-    options: props.address
+    addressOptions: props.address
       ? [{ ...props.address }].map((i) => ({
           title: i.address ?? "",
           value: i.id?.toString(),
@@ -41,11 +41,12 @@ export const AddressModal: FC<
     if (!form.isFieldsTouched(["address"])) {
       form.setFieldValue(
         "address",
-        state.options?.find((o) => Number(o.id) === Number(props.address?.id))
-          ?.title,
+        state.addressOptions?.find(
+          (o) => Number(o.id) === Number(props.address?.id),
+        )?.title,
       );
     }
-  }, [form, props.address?.id, state.options]);
+  }, [form, props.address?.id, state.addressOptions]);
 
   return (
     <Modal
@@ -79,9 +80,9 @@ export const AddressModal: FC<
           allowClear
           onFocus={async () => {
             if (!form.getFieldValue("address")) {
-              const address = await props.onSearch("");
+              const { data } = await props.onSearchAddress("");
               setState({
-                options: address?.splice(0, 10).map((i) => ({
+                addressOptions: data.searchAddress?.map((i) => ({
                   title: i?.address ?? "",
                   value: i?.id?.toString(),
                 })),
@@ -94,15 +95,16 @@ export const AddressModal: FC<
           }}
           optionRender={({ data }) => <div key={data.id}>{data.title}</div>}
           onSearch={async (text) => {
-            const address = await props.onSearch(text);
+            const { data } = await props.onSearchAddress(text);
+
             setState({
-              options: address?.map((i) => ({
+              addressOptions: data.searchAddress?.map((i) => ({
                 title: i?.address ?? "",
                 value: i?.id?.toString(),
               })),
             });
           }}
-          options={state.options}
+          options={state.addressOptions}
         />
       </Field>
     </Modal>

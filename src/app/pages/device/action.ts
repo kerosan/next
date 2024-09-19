@@ -1,7 +1,22 @@
-import { CREATE_DEVICE, DELETE_DEVICE, UPDATE_DEVICE } from "./query";
+import {
+  CREATE_DEVICE,
+  DELETE_DEVICE,
+  SEARCH_DEVICE,
+  UPDATE_DEVICE,
+} from "./query";
 import { getClient } from "@/lib/apolloClient";
 import type { Mutation, Query } from "@/graphql/resolvers-types";
 import type { Device } from "@prisma/client";
+
+export const onSearchDevice = async (text: string) => {
+  "use server";
+  console.log("onSearchDevice", { text });
+
+  return await getClient().query<{ searchDevice: Query["searchDevice"] }>({
+    query: SEARCH_DEVICE,
+    variables: { text },
+  });
+};
 
 export const onCreate = async (device: Partial<Device>) => {
   "use server";

@@ -5,12 +5,9 @@ import { useLocalState } from "@/utils/useLocalState";
 import { Modal, Input, Form, AutoComplete } from "antd";
 import type { AutoCompleteProps, ModalProps } from "antd";
 import { useEffect, type FC } from "react";
-import type {
-  onCreate,
-  onUpdate,
-  onSearchAddress,
-  onSearchDevice,
-} from "./action";
+import type { onCreate, onUpdate } from "./action";
+import type { onSearchAddress } from "../address/action";
+import type { onSearchDevice } from "../device/action";
 
 const Field = Form.Item;
 

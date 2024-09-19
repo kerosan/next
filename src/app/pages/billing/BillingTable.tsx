@@ -1,7 +1,5 @@
 "use client";
 
-import { UserModal } from "./UserModal";
-import type { User } from "@prisma/client";
 import {
   Button,
   Card,
@@ -15,29 +13,31 @@ import {
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { useRef, type FC } from "react";
 import { useLocalState } from "@/utils/useLocalState";
-import { GET_USUERS_PAGE } from "./query";
 import { useQuery } from "@apollo/client";
-import type { Query } from "@/graphql/resolvers-types";
-import type { onCreate, onDelete, onUpdate } from "./action";
+import { BillingModal } from "./BillingModal";
+import type { Billing, BillingPageResult } from "@/graphql/resolvers-types";
 import { useKey } from "react-use";
 import { skip } from "@/utils/pagination";
-import type { onSearchAddress } from "../address/action";
-import type { onSearchDevice } from "../device/action";
+import { GET_BILLING_PAGE } from "./query";
+import dayjs from "dayjs";
+import type { onCreate, onDelete, onUpdate } from "./action";
 
 type State = {
   open: boolean;
-  current?: User;
+  current?: Billing;
   pagination: Pick<TablePaginationConfig, "current" | "pageSize">;
 };
 
-export const UserTable: FC<{
-  onSearchAddress: typeof onSearchAddress;
-  onSearchDevice: typeof onSearchDevice;
+export const BillingTable: FC<{
   onCreate: typeof onCreate;
   onUpdate: typeof onUpdate;
   onDelete: typeof onDelete;
 }> = (props) => {
   const addRef = useRef<HTMLButtonElement>(null);
+
+  useKey("+", () => {
+    addRef.current?.click();
+  });
 
   const [state, setState] = useLocalState<State>({
     open: false,
@@ -49,8 +49,8 @@ export const UserTable: FC<{
   });
 
   const { data, error, refetch, fetchMore } = useQuery<{
-    users: Query["users"];
-  }>(GET_USUERS_PAGE, {
+    billing: BillingPageResult;
+  }>(GET_BILLING_PAGE, {
     variables: {
       take: state.pagination.pageSize,
       skip: skip(state.pagination),
@@ -61,10 +61,6 @@ export const UserTable: FC<{
     throw error;
   }
 
-  useKey("+", () => {
-    addRef.current?.click();
-  });
-
   const columns: TableColumnsType = [
     {
       key: 0,
@@ -73,49 +69,37 @@ export const UserTable: FC<{
     },
     {
       key: 1,
-      title: "Name",
-      dataIndex: "name",
-    },
-    {
-      key: 2,
-      title: "Phone",
-      dataIndex: "phone",
+      title: "User",
+      dataIndex: "user.name",
     },
     {
       key: 3,
-      title: "Email",
-      dataIndex: "email",
+      title: "Date",
+      dataIndex: "date",
+      render: (_, row) => {
+        return dayjs(row.startDate).isValid()
+          ? dayjs(row.startDate).format("DD-MMM-YYYY")
+          : "";
+      },
     },
     {
       key: 4,
-      title: "Address",
-      // dataIndex: "address",
-      render: (_, row) => {
-        return row.address?.address;
-      },
-    },
-    {
-      key: 5,
-      title: "Device",
-      // dataIndex: "device",
-      render: (_, row) => {
-        return row.device?.name;
-      },
-    },
-    {
-      key: 5,
-      title: "Balance",
-      dataIndex: "balance",
+      title: "Payment",
+      dataIndex: "payment",
     },
     {
       title: "operation",
       dataIndex: "operation",
+      width: "10%",
       render: (_, row) => (
         <>
           <Button
             icon={<EditOutlined />}
             onClick={() => {
-              setState({ open: true, current: row as User });
+              const r = setState({
+                open: true,
+                current: row as Billing,
+              });
             }}
           />{" "}
           <Popconfirm
@@ -123,7 +107,10 @@ export const UserTable: FC<{
             onConfirm={async () => {
               console.log("onConfirm", { row });
               await props.onDelete(row.id);
-              await refetch();
+              await refetch({
+                take: state.pagination.pageSize,
+                skip: skip(state.pagination),
+              });
             }}
           >
             <Button icon={<DeleteOutlined />} />
@@ -136,58 +123,55 @@ export const UserTable: FC<{
   return (
     <Card>
       <Flex align="baseline" justify="space-between">
-        <Typography.Title>Users</Typography.Title>
+        <Typography.Title>Billing</Typography.Title>
         <Button
           ref={addRef}
           icon={<PlusOutlined />}
           onClick={() => setState({ current: undefined, open: true })}
         />
       </Flex>
-
       {state.open ? (
-        <UserModal
+        <BillingModal
           open={state.open}
-          user={state.current}
+          billing={state.current}
           closable
           destroyOnClose
-          onSearchAddress={props.onSearchAddress}
-          onSearchDevice={props.onSearchDevice}
-          onCreate={async (user) => {
-            const newUser = await props.onCreate(user);
-            if (newUser) {
+          onUpdate={async (billing) => {
+            const upBilling = await props.onUpdate(billing);
+
+            if (upBilling) {
               setState({ open: false });
               await refetch({
                 take: state.pagination.pageSize,
                 skip: skip(state.pagination),
               });
             }
-            return newUser;
+            return upBilling;
           }}
-          onUpdate={async (user) => {
-            const newUser = await props.onUpdate(user);
-            if (newUser) {
+          onCreate={async (billing) => {
+            const newBilling = await props.onCreate(billing);
+            if (newBilling) {
               setState({ open: false });
               await refetch({
                 take: state.pagination.pageSize,
                 skip: skip(state.pagination),
               });
             }
-            return newUser;
+            return newBilling;
           }}
           onCancel={() => {
             setState({ open: false, current: undefined });
           }}
         />
       ) : null}
-
       <Table
         bordered
         rowKey={"id"}
         columns={columns}
-        dataSource={data?.users?.list}
+        dataSource={data?.billing?.list ?? []}
         pagination={{
           ...state.pagination,
-          total: data?.users?.total,
+          total: data?.billing.total,
           onChange: async (current, pageSize) => {
             setState({ pagination: { current, pageSize } });
             await fetchMore({

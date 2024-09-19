@@ -46,7 +46,8 @@ model Tariff {
 }
 
 model Billing {
-  id      Int   @id @default(autoincrement())
+  id      Int    @id @default(autoincrement())
   userId  Int
   payment Float
+  date    String
 }

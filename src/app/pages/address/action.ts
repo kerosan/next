@@ -9,18 +9,14 @@ import { getClient } from "@/lib/apolloClient";
 import type { Mutation, Query } from "@/graphql/resolvers-types";
 import type { Address } from "@prisma/client";
 
-export const onSearch = async (text: string) => {
+export const onSearchAddress = async (text: string) => {
   "use server";
+  console.log("onSearchAddress", { text });
 
-  const { data, error } = await getClient().query<Pick<Query, "searchAddress">>(
-    {
-      query: SEARCH_ADDRESS,
-      variables: { text },
-    },
-  );
-  console.log("onSearchAddress", { text, data, error });
-
-  return data.searchAddress;
+  return await getClient().query<{ searchAddress: Query["searchAddress"] }>({
+    query: SEARCH_ADDRESS,
+    variables: { text },
+  });
 };
 
 export const onCreate = async (address: Partial<Address>) => {

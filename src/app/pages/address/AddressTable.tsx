@@ -20,7 +20,7 @@ import { AddressModal } from "./AddressModal";
 import type { AddressPageResult } from "@/graphql/resolvers-types";
 import { useKey } from "react-use";
 import { skip } from "@/utils/pagination";
-import type { onCreate, onDelete, onSearch, onUpdate } from "./action";
+import type { onCreate, onDelete, onSearchAddress, onUpdate } from "./action";
 
 type State = {
   open: boolean;
@@ -29,7 +29,7 @@ type State = {
 };
 
 export const AddressTable: FC<{
-  onSearch: typeof onSearch;
+  onSearchAddress: typeof onSearchAddress;
   onCreate: typeof onCreate;
   onUpdate: typeof onUpdate;
   onDelete: typeof onDelete;
@@ -117,7 +117,7 @@ export const AddressTable: FC<{
           address={state.current}
           closable
           destroyOnClose
-          onSearch={props.onSearch}
+          onSearchAddress={props.onSearchAddress}
           onUpdate={async (address) => {
             const upAddress = await props.onUpdate(address);
 

@@ -3,30 +3,8 @@ import { getClient } from "@/lib/apolloClient";
 import {
   CREATE_USER,
   DELETE_USER,
-  SEARCH_ADDRESS,
-  SEARCH_DEVICE,
   UPDATE_USER,
 } from "./query";
-
-export const onSearchAddress = async (text: string) => {
-  "use server";
-  console.log("onSearchAddress", { text });
-
-  return await getClient().query<{ searchAddress: Query["searchAddress"] }>({
-    query: SEARCH_ADDRESS,
-    variables: { text },
-  });
-};
-
-export const onSearchDevice = async (text: string) => {
-  "use server";
-  console.log("onSearchDevice", { text });
-
-  return await getClient().query<{ searchDevice: Query["searchDevice"] }>({
-    query: SEARCH_DEVICE,
-    variables: { text },
-  });
-};
 
 export const onCreate = async (user: Partial<User>) => {
   "use server";

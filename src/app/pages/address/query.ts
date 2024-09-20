@@ -13,7 +13,7 @@ export const GET_ADDRESS_PAGE = gql`
 `;
 
 export const SEARCH_ADDRESS = gql`
-  query SearchAddress($text: String){
+  query SearchAddress($text: String) {
     searchAddress(text: $text) {
       id
       address
@@ -22,7 +22,7 @@ export const SEARCH_ADDRESS = gql`
 `;
 
 export const GET_ADDRESS = gql`
-  query getAddress($id: ID!){
+  query getAddress($id: ID!) {
     address(id: $id) {
       id
       address
@@ -31,7 +31,7 @@ export const GET_ADDRESS = gql`
 `;
 
 export const CREATE_ADDRESS = gql`
-  mutation CreateAddress($address: CreateAddressInput!){
+  mutation CreateAddress($address: CreateAddressInput!) {
     createAddress(address: $address) {
       id
       address
@@ -40,7 +40,7 @@ export const CREATE_ADDRESS = gql`
 `;
 
 export const UPDATE_ADDRESS = gql`
-  mutation UpdateAddress($address: UpdateAddressInput!){
+  mutation UpdateAddress($address: UpdateAddressInput!) {
     updateAddress(address: $address) {
       id
       address
@@ -49,7 +49,7 @@ export const UPDATE_ADDRESS = gql`
 `;
 
 export const DELETE_ADDRESS = gql`
-  mutation DeleteAddress($addressId: Int){
+  mutation DeleteAddress($addressId: Int) {
     deleteAddress(addressId: $addressId)
   }
 `;

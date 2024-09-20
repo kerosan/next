@@ -1,93 +1,93 @@
 type User {
-    id: Int
-    smId: String
-    email: String
-    name: String
-    phone: String
-    addressId: Int
-    address: Address
-    deviceId: Int
-    device: Device
-    balance: Float
-  }
+  id: Int
+  smId: String
+  email: String
+  name: String
+  phone: String
+  addressId: Int
+  address: Address
+  deviceId: Int
+  device: Device
+  balance: Float
+}
 
 type UserPageResult {
-    list: [User!]!
-    total: Int!
+  list: [User!]!
+  total: Int!
 }
 
 input CreateUserInput {
-    smId: String
-    email: String
-    name: String
-    phone: String
-    # address: String
-    addressId: Int
-    # device: String
-    deviceId: Int
+  smId: String
+  email: String
+  name: String
+  phone: String
+  # address: String
+  addressId: Int
+  # device: String
+  deviceId: Int
 }
 
 input UpdateUserInput {
-    id: Int!
-    smId: String
-    email: String
-    name: String
-    phone: String
-    # address: String
-    addressId: Int
-    # device: String
-    deviceId: Int
+  id: Int!
+  smId: String
+  email: String
+  name: String
+  phone: String
+  # address: String
+  addressId: Int
+  # device: String
+  deviceId: Int
 }
 
 type Address {
-    id: Int
-    address: String
+  id: Int
+  address: String
 }
 
 type AddressPageResult {
-    list: [Address!]!
-    total: Int!
+  list: [Address!]!
+  total: Int!
 }
 
 input CreateAddressInput {
-    address: String!
+  address: String!
 }
 
 input UpdateAddressInput {
-    id: Int!
-    address: String!
+  id: Int!
+  address: String!
 }
 
 type Device {
-    id: Int!
-    name: String
-    initialValue: Float!
-    startDate: String!
-    endDate: String
+  id: Int!
+  name: String
+  initialValue: Float!
+  startDate: String!
+  endDate: String
 }
 
 type DevicePageResult {
-    list: [Device!]!
-    total: Int!
+  list: [Device!]!
+  total: Int!
 }
 
 input CreateDeviceInput {
-    name: String
-    initialValue: Float!
-    startDate: String!
-    endDate: String
+  name: String
+  initialValue: Float!
+  startDate: String!
+  endDate: String
 }
 
 input UpdateDeviceInput {
-    id: Int!
-    name: String
-    initialValue: Float!
-    startDate: String!
-    endDate: String
+  id: Int!
+  name: String
+  initialValue: Float!
+  startDate: String!
+  endDate: String
 }
 
 type Billing {
-  id: Int!  
+  id: Int!
   userId: Int!
   user: User!
   payment: Float!
@@ -95,8 +95,8 @@ type Billing {
 }
 
 type BillingPageResult {
-    list: [Billing!]!
-    total: Int!
+  list: [Billing!]!
+  total: Int!
 }
 
 input CreateBillingInput {
@@ -110,29 +110,58 @@ input UpdateBillingInput {
   payment: Float!
 }
 
+type Settings {
+  tariff: [Tariff!]!
+}
+
+type Tariff {
+  id: Int!
+  price: Float!
+  startDate: String!
+  endDate: String
+}
+
+input CreateTariffInput {
+  price: Float!
+  startDate: String!
+  endDate: String
+}
+
+input UpdateTariffInput {
+  id: Int!
+  price: Float!
+  startDate: String!
+  endDate: String
+}
+
 type Query {
-    address(take: Int!, skip: Int!): AddressPageResult
-    billing(take: Int!, skip: Int!): BillingPageResult
-    device(take: Int!, skip: Int!): DevicePageResult
-    users(take: Int!, skip: Int!): UserPageResult
-    searchAddress(text: String): [Address]!
-    searchDevice(text: String): [Device]!
+  address(take: Int!, skip: Int!): AddressPageResult
+  billing(take: Int!, skip: Int!): BillingPageResult
+  device(take: Int!, skip: Int!): DevicePageResult
+  users(take: Int!, skip: Int!): UserPageResult
+  searchAddress(text: String): [Address]!
+  searchDevice(text: String): [Device]!
+  settings: Settings!
 }
 
 type Mutation {
   createUser(user: CreateUserInput): User
   updateUser(user: UpdateUserInput): User
   deleteUser(userId: Int): Int
-  
+
   createAddress(address: CreateAddressInput!): Address
   updateAddress(address: UpdateAddressInput!): Address
   deleteAddress(addressId: Int): Int
-  
+
   createDevice(device: CreateDeviceInput!): Device
   updateDevice(device: UpdateDeviceInput!): Device
   deleteDevice(deviceId: Int): Int
-  
+
   createBilling(billing: CreateBillingInput!): Billing
   updateBilling(billing: UpdateBillingInput!): Billing
   deleteBilling(billingId: Int): Int
+
+  createTariff(tariff: CreateTariffInput!): Tariff
+  updateTariff(tariff: UpdateTariffInput!): Tariff
+  deleteTariff(tariffId: Int): Int
 }

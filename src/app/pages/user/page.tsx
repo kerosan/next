@@ -1,12 +1,8 @@
 import { Suspense } from "react";
 import { UserTable } from "./UserTable";
-import {
-  onCreate,
-  onDelete,
-  onSearchAddress,
-  onSearchDevice,
-  onUpdate,
-} from "./action";
+import { onCreate, onDelete, onUpdate } from "./action";
+import { onSearchAddress } from "../address/action";
+import { onSearchDevice } from "../device/action";
 
 export default async function Page() {
   return (

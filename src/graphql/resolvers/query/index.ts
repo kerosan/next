@@ -70,4 +70,8 @@ export const Query: Resolvers["Query"] = {
 
     return { list, total };
   },
+  settings: async (parent, args) => {
+    const tariff = await prisma.tariff.findMany();
+    return { tariff };
+  },
 };

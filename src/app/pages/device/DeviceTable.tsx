@@ -64,50 +64,61 @@ export const DeviceTable: FC<{
   const columns: TableColumnsType = [
     {
       key: 0,
-      title: "id",
+      title: "ID",
       dataIndex: "id",
+      width: 60,
     },
     {
-      key: 4,
-      title: "Name",
-      dataIndex: "name",
-      width: "50%",
+      key: 1,
+      title: "Номер лічильника",
+      dataIndex: "meterNumber",
+      width: "20%",
     },
     {
-      key: 5,
-      title: "Start Date",
+      key: 2,
+      title: "Послуга",
+      render: (_, row) => {
+        return row.service?.name ? `${row.service.name} (${row.service.unit})` : "—";
+      },
+      width: "20%",
+    },
+    {
+      key: 3,
+      title: "Дата встановлення",
       dataIndex: "startDate",
       render: (_, row) => {
         return dayjs(row.startDate).isValid()
           ? dayjs(row.startDate).format("DD-MMM-YYYY")
           : "";
       },
-      width: "150px",
+      width: "15%",
     },
     {
-      key: 6,
-      title: "End Date",
+      key: 4,
+      title: "Дата зняття",
       dataIndex: "endDate",
       render: (_, row) => {
         return dayjs(row.endDate).isValid()
           ? dayjs(row.endDate).format("DD-MMM-YYYY")
-          : "";
+          : "—";
       },
-      width: "150px",
+      width: "15%",
     },
     {
-      key: 7,
-      title: "Initial Value",
+      key: 5,
+      title: "Початкові показання",
       dataIndex: "initialValue",
-      width: "150px",
+      width: "12%",
+      render: (value) => value?.toFixed(3),
     },
     {
-      title: "operation",
+      title: "Дії",
       dataIndex: "operation",
       width: "10%",
       render: (_, row) => (
         <>
           <Button
+            size="small"
             icon={<EditOutlined />}
             onClick={() => {
               const r = setState({
@@ -117,7 +128,8 @@ export const DeviceTable: FC<{
             }}
           />{" "}
           <Popconfirm
-            title="Sure to delete?"
+            title="Видалити лічильник?"
+            description="Ця дія не може бути скасована"
             onConfirm={async () => {
               console.log("onConfirm", { row });
               await props.onDelete(row.id);
@@ -126,8 +138,10 @@ export const DeviceTable: FC<{
                 skip: skip(state.pagination),
               });
             }}
+            okText="Так"
+            cancelText="Ні"
           >
-            <Button icon={<DeleteOutlined />} />
+            <Button size="small" danger icon={<DeleteOutlined />} />
           </Popconfirm>
         </>
       ),
@@ -137,12 +151,15 @@ export const DeviceTable: FC<{
   return (
     <Card>
       <Flex align="baseline" justify="space-between">
-        <Typography.Title>Device</Typography.Title>
+        <Typography.Title>Лічильники</Typography.Title>
         <Button
           ref={addRef}
+          type="primary"
           icon={<PlusOutlined />}
           onClick={() => setState({ current: undefined, open: true })}
-        />
+        >
+          Додати лічильник
+        </Button>
       </Flex>
       {state.open ? (
         <DeviceModal

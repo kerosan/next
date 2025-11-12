@@ -65,17 +65,30 @@ export const AddressTable: FC<{
   const columns: TableColumnsType = [
     {
       key: 0,
-      title: "id",
+      title: "ID",
       dataIndex: "id",
+      width: 60,
     },
     {
-      key: 4,
-      title: "Address",
+      key: 1,
+      title: "Адреса",
       dataIndex: "address",
-      width: "90%",
+      width: "40%",
     },
     {
-      title: "operation",
+      key: 2,
+      title: "Місто",
+      dataIndex: "city",
+      width: "30%",
+    },
+    {
+      key: 3,
+      title: "Поштовий індекс",
+      dataIndex: "zipCode",
+      width: "20%",
+    },
+    {
+      title: "Дії",
       dataIndex: "operation",
       width: "10%",
       render: (_, row) => (
@@ -87,12 +100,14 @@ export const AddressTable: FC<{
             }}
           />{" "}
           <Popconfirm
-            title="Sure to delete?"
+            title="Видалити адресу?"
             onConfirm={async () => {
               console.log("onConfirm", { row });
               await props.onDelete(row.id);
               await refetch();
             }}
+            okText="Так"
+            cancelText="Ні"
           >
             <Button icon={<DeleteOutlined />} />
           </Popconfirm>
@@ -104,7 +119,7 @@ export const AddressTable: FC<{
   return (
     <Card>
       <Flex align="baseline" justify="space-between">
-        <Typography.Title>Address</Typography.Title>
+        <Typography.Title>Адреси</Typography.Title>
         <Button
           ref={addRef}
           icon={<PlusOutlined />}

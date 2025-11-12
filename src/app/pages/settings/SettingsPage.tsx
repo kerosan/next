@@ -6,7 +6,7 @@ import { GET_SETTINGS_PAGE } from "./query";
 import { useQuery } from "@apollo/client";
 import type { Query } from "@/graphql/resolvers-types";
 import { TariffTable } from "./TariffTable";
-import { onCreateTariff, onDeleteTariff, onUpdateTariff } from "./action";
+import type { onCreateTariff, onDeleteTariff, onUpdateTariff } from "./action";
 
 const Field = Form.Item;
 

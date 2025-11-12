@@ -8,14 +8,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prisma:generate": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 npx --yes prisma generate",
+    "prisma:generate": "prisma generate",
     "prisma:pull": "npx prisma db pull",
     "prisma:push": "npx prisma db push",
     "prisma:migrate:dev": "npx prisma migrate dev --name fix_date_type",
     "prisma:migrate:reset": "npx prisma migrate reset",
     "prisma:studio": "npx prisma studio",
-    "codegen": "graphql-codegen --config src/graphql/codegen.ts",
-    "postinstall": "npm run prisma:generate"
+    "codegen": "graphql-codegen --config src/graphql/codegen.ts"
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.21.0",
@@ -26,7 +25,6 @@
     "@apollo/server": "^4.11.0",
     "@biomejs/biome": "^1.8.3",
     "@prisma/client": "^5.19.1",
-    "@prisma/extension-accelerate": "^1.1.0",
     "antd": "^5.20.1",
     "cross-env": "^7.0.3",
     "dayjs": "^1.11.12",

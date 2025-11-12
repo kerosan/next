@@ -23,8 +23,21 @@ export const Navigation = () => {
         <Link href="/pages/device" className="link">
           Device
         </Link>
+        <Link href="/pages/meter-reading" className="link">
+          Meter Reading
+        </Link>
         <Link href="/pages/billing" className="link">
           Billing
+        </Link>
+        <Link href="/pages/payment" className="link">
+          Payment
+        </Link>
+        <hr />
+        <Link href="/pages/service" className="link">
+          Services
+        </Link>
+        <Link href="/pages/reports" className="link">
+          Reports
         </Link>
         <hr />
         <Link href="/pages/settings" className="link justify-end">

@@ -68,65 +68,71 @@ export const UserTable: FC<{
   const columns: TableColumnsType = [
     {
       key: 0,
-      title: "id",
+      title: "ID",
       dataIndex: "id",
+      width: 60,
     },
     {
       key: 1,
-      title: "Name",
+      title: "Ім'я",
       dataIndex: "name",
+      width: "20%",
+      sorter: (a, b) => (a.name || "").localeCompare(b.name || ""),
     },
     {
       key: 2,
-      title: "Phone",
+      title: "Телефон",
       dataIndex: "phone",
+      width: "15%",
     },
     {
       key: 3,
       title: "Email",
       dataIndex: "email",
+      width: "20%",
     },
     {
       key: 4,
-      title: "Address",
-      // dataIndex: "address",
+      title: "Адреса",
       render: (_, row) => {
-        return row.address?.address;
+        const addr = row.address?.address;
+        const city = row.address?.city;
+        return city ? `${addr}, ${city}` : addr;
       },
+      width: "20%",
     },
     {
       key: 5,
-      title: "Device",
-      // dataIndex: "device",
-      render: (_, row) => {
-        return row.device?.name;
-      },
-    },
-    {
-      key: 5,
-      title: "Balance",
+      title: "Баланс",
       dataIndex: "balance",
+      width: "10%",
+      render: (balance) => `${balance?.toFixed(2) || "0.00"} ₴`,
     },
     {
-      title: "operation",
+      title: "Дії",
       dataIndex: "operation",
+      width: "12%",
       render: (_, row) => (
         <>
           <Button
             icon={<EditOutlined />}
+            size="small"
             onClick={() => {
               setState({ open: true, current: row as User });
             }}
           />{" "}
           <Popconfirm
-            title="Sure to delete?"
+            title="Видалити абонента?"
+            description="Ця дія не може бути скасована"
             onConfirm={async () => {
               console.log("onConfirm", { row });
               await props.onDelete(row.id);
               await refetch();
             }}
+            okText="Так"
+            cancelText="Ні"
           >
-            <Button icon={<DeleteOutlined />} />
+            <Button icon={<DeleteOutlined />} danger size="small" />
           </Popconfirm>
         </>
       ),
@@ -136,12 +142,15 @@ export const UserTable: FC<{
   return (
     <Card>
       <Flex align="baseline" justify="space-between">
-        <Typography.Title>Users</Typography.Title>
+        <Typography.Title>Абоненти</Typography.Title>
         <Button
           ref={addRef}
+          type="primary"
           icon={<PlusOutlined />}
           onClick={() => setState({ current: undefined, open: true })}
-        />
+        >
+          Додати абонента
+        </Button>
       </Flex>
 
       {state.open ? (

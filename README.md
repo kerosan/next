@@ -1,4 +1,42 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Система управління та обліку абонентів комунальних послуг
+
+**Next.js 14** + **GraphQL** + **Prisma** + **SQLite** + **Telegram Bot**
+
+Система для управління абонентами комунальних послуг (вода, газ, електрика) з можливістю реєстрації абонентів, ведення обліку лічильників, розрахунку платежів та отримання оплат.
+
+## 📋 Документація Проекту
+
+- **[.github/copilot-instructions.md](./.github/copilot-instructions.md)** - Інструкції для AI агентів
+- **[IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md)** - План реалізації системи
+- **[STAGE1_SETUP_GUIDE.md](./STAGE1_SETUP_GUIDE.md)** - Інструкції для завершення Етапу 1 ⚠️ ПРОЧИТАЙТЕ ЦЕ СПОЧАТКУ!
+- **[STAGE1_COMPLETION.md](./STAGE1_COMPLETION.md)** - Огляд змін та приклади
+
+## 🚀 Швидкий Старт
+
+### Завершення Етапу 1 (База Даних і GraphQL)
+
+**ВАЖЛИВО:** Необхідно завершити наступні кроки:
+
+```powershell
+# 1. Очистити та переустановити зависимости
+Remove-Item -Recurse -Force node_modules -ErrorAction SilentlyContinue
+Remove-Item package-lock.json -ErrorAction SilentlyContinue
+npm install
+
+# 2. Застосувати міграцію
+npm run prisma:migrate:reset
+
+# 3. Генерувати Prisma Client
+npm run prisma:generate
+
+# 4. Генерувати GraphQL типи
+npm run codegen
+
+# 5. Запустити dev сервер
+npm run dev
+```
+
+Детальні інструкції: [STAGE1_SETUP_GUIDE.md](./STAGE1_SETUP_GUIDE.md)
 
 ## Getting Started
 

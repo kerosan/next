@@ -19,7 +19,9 @@ export type Scalars = {
 export type Address = {
   __typename?: 'Address';
   address?: Maybe<Scalars['String']['output']>;
+  city?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
+  zipCode?: Maybe<Scalars['String']['output']>;
 };
 
 export type AddressPageResult = {
@@ -30,9 +32,18 @@ export type AddressPageResult = {
 
 export type Billing = {
   __typename?: 'Billing';
-  date: Scalars['String']['output'];
+  amount: Scalars['Float']['output'];
+  billingPeriod: Scalars['String']['output'];
+  consumption: Scalars['Float']['output'];
+  currentReading: Scalars['Float']['output'];
+  device: Device;
+  deviceId: Scalars['Int']['output'];
+  dueDate: Scalars['String']['output'];
   id: Scalars['Int']['output'];
-  payment: Scalars['Float']['output'];
+  isPaid: Scalars['Boolean']['output'];
+  previousReading: Scalars['Float']['output'];
+  tariff: Tariff;
+  tariffId: Scalars['Int']['output'];
   user: User;
   userId: Scalars['Int']['output'];
 };
@@ -45,23 +56,56 @@ export type BillingPageResult = {
 
 export type CreateAddressInput = {
   address: Scalars['String']['input'];
+  city?: InputMaybe<Scalars['String']['input']>;
+  zipCode?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateBillingInput = {
-  payment: Scalars['Float']['input'];
+  billingPeriod: Scalars['String']['input'];
+  currentReading: Scalars['Float']['input'];
+  deviceId: Scalars['Int']['input'];
+  dueDate: Scalars['String']['input'];
+  previousReading: Scalars['Float']['input'];
+  tariffId: Scalars['Int']['input'];
   userId: Scalars['Int']['input'];
 };
 
 export type CreateDeviceInput = {
   endDate?: InputMaybe<Scalars['String']['input']>;
   initialValue: Scalars['Float']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
+  meterNumber?: InputMaybe<Scalars['String']['input']>;
+  serviceId?: InputMaybe<Scalars['Int']['input']>;
   startDate: Scalars['String']['input'];
+  userId?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type CreateMeterReadingInput = {
+  deviceId: Scalars['Int']['input'];
+  notes?: InputMaybe<Scalars['String']['input']>;
+  readingDate: Scalars['String']['input'];
+  value: Scalars['Float']['input'];
+};
+
+export type CreatePaymentInput = {
+  amount: Scalars['Float']['input'];
+  billingId?: InputMaybe<Scalars['Int']['input']>;
+  notes?: InputMaybe<Scalars['String']['input']>;
+  paymentDate: Scalars['String']['input'];
+  paymentMethod: Scalars['String']['input'];
+  reference?: InputMaybe<Scalars['String']['input']>;
+  userId: Scalars['Int']['input'];
+};
+
+export type CreateServiceInput = {
+  name: Scalars['String']['input'];
+  unit: Scalars['String']['input'];
 };
 
 export type CreateTariffInput = {
   endDate?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
   price: Scalars['Float']['input'];
+  serviceId: Scalars['Int']['input'];
   startDate: Scalars['String']['input'];
 };
 
@@ -79,8 +123,13 @@ export type Device = {
   endDate?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   initialValue: Scalars['Float']['output'];
-  name?: Maybe<Scalars['String']['output']>;
+  meterNumber?: Maybe<Scalars['String']['output']>;
+  readings: Array<MeterReading>;
+  service?: Maybe<Service>;
+  serviceId?: Maybe<Scalars['Int']['output']>;
   startDate: Scalars['String']['output'];
+  user?: Maybe<User>;
+  userId?: Maybe<Scalars['Int']['output']>;
 };
 
 export type DevicePageResult = {
@@ -89,21 +138,45 @@ export type DevicePageResult = {
   total: Scalars['Int']['output'];
 };
 
+export type MeterReading = {
+  __typename?: 'MeterReading';
+  consumption?: Maybe<Scalars['Float']['output']>;
+  device: Device;
+  deviceId: Scalars['Int']['output'];
+  id: Scalars['Int']['output'];
+  notes?: Maybe<Scalars['String']['output']>;
+  readingDate: Scalars['String']['output'];
+  value: Scalars['Float']['output'];
+};
+
+export type MeterReadingPageResult = {
+  __typename?: 'MeterReadingPageResult';
+  list: Array<MeterReading>;
+  total: Scalars['Int']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createAddress?: Maybe<Address>;
   createBilling?: Maybe<Billing>;
   createDevice?: Maybe<Device>;
+  createPayment?: Maybe<Payment>;
+  createReading?: Maybe<MeterReading>;
+  createService?: Maybe<Service>;
   createTariff?: Maybe<Tariff>;
   createUser?: Maybe<User>;
   deleteAddress?: Maybe<Scalars['Int']['output']>;
   deleteBilling?: Maybe<Scalars['Int']['output']>;
   deleteDevice?: Maybe<Scalars['Int']['output']>;
+  deletePayment?: Maybe<Scalars['Int']['output']>;
+  deleteReading?: Maybe<Scalars['Int']['output']>;
+  deleteService?: Maybe<Scalars['Int']['output']>;
   deleteTariff?: Maybe<Scalars['Int']['output']>;
   deleteUser?: Maybe<Scalars['Int']['output']>;
   updateAddress?: Maybe<Address>;
   updateBilling?: Maybe<Billing>;
   updateDevice?: Maybe<Device>;
+  updateService?: Maybe<Service>;
   updateTariff?: Maybe<Tariff>;
   updateUser?: Maybe<User>;
 };
@@ -121,6 +194,21 @@ export type MutationCreateBillingArgs = {
 
 export type MutationCreateDeviceArgs = {
   device: CreateDeviceInput;
+};
+
+
+export type MutationCreatePaymentArgs = {
+  payment: CreatePaymentInput;
+};
+
+
+export type MutationCreateReadingArgs = {
+  reading: CreateMeterReadingInput;
+};
+
+
+export type MutationCreateServiceArgs = {
+  service: CreateServiceInput;
 };
 
 
@@ -149,6 +237,21 @@ export type MutationDeleteDeviceArgs = {
 };
 
 
+export type MutationDeletePaymentArgs = {
+  paymentId?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type MutationDeleteReadingArgs = {
+  readingId?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type MutationDeleteServiceArgs = {
+  serviceId?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type MutationDeleteTariffArgs = {
   tariffId?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -174,6 +277,11 @@ export type MutationUpdateDeviceArgs = {
 };
 
 
+export type MutationUpdateServiceArgs = {
+  service: UpdateServiceInput;
+};
+
+
 export type MutationUpdateTariffArgs = {
   tariff: UpdateTariffInput;
 };
@@ -183,14 +291,39 @@ export type MutationUpdateUserArgs = {
   user?: InputMaybe<UpdateUserInput>;
 };
 
+export type Payment = {
+  __typename?: 'Payment';
+  amount: Scalars['Float']['output'];
+  billing?: Maybe<Billing>;
+  billingId?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['Int']['output'];
+  notes?: Maybe<Scalars['String']['output']>;
+  paymentDate: Scalars['String']['output'];
+  paymentMethod: Scalars['String']['output'];
+  reference?: Maybe<Scalars['String']['output']>;
+  user: User;
+  userId: Scalars['Int']['output'];
+};
+
+export type PaymentPageResult = {
+  __typename?: 'PaymentPageResult';
+  list: Array<Payment>;
+  total: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   address?: Maybe<AddressPageResult>;
   billing?: Maybe<BillingPageResult>;
   device?: Maybe<DevicePageResult>;
+  payments?: Maybe<PaymentPageResult>;
+  readings?: Maybe<MeterReadingPageResult>;
   searchAddress: Array<Maybe<Address>>;
   searchDevice: Array<Maybe<Device>>;
+  searchPayment: Array<Maybe<Payment>>;
+  services?: Maybe<ServicePageResult>;
   settings: Settings;
+  unpaidBillings?: Maybe<BillingPageResult>;
   users?: Maybe<UserPageResult>;
 };
 
@@ -213,6 +346,19 @@ export type QueryDeviceArgs = {
 };
 
 
+export type QueryPaymentsArgs = {
+  skip: Scalars['Int']['input'];
+  take: Scalars['Int']['input'];
+};
+
+
+export type QueryReadingsArgs = {
+  deviceId: Scalars['Int']['input'];
+  skip: Scalars['Int']['input'];
+  take: Scalars['Int']['input'];
+};
+
+
 export type QuerySearchAddressArgs = {
   text?: InputMaybe<Scalars['String']['input']>;
 };
@@ -223,9 +369,42 @@ export type QuerySearchDeviceArgs = {
 };
 
 
+export type QuerySearchPaymentArgs = {
+  reference?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryServicesArgs = {
+  skip: Scalars['Int']['input'];
+  take: Scalars['Int']['input'];
+};
+
+
+export type QueryUnpaidBillingsArgs = {
+  skip: Scalars['Int']['input'];
+  take: Scalars['Int']['input'];
+  userId: Scalars['Int']['input'];
+};
+
+
 export type QueryUsersArgs = {
   skip: Scalars['Int']['input'];
   take: Scalars['Int']['input'];
+};
+
+export type Service = {
+  __typename?: 'Service';
+  devices: Array<Device>;
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  tariffs: Array<Tariff>;
+  unit: Scalars['String']['output'];
+};
+
+export type ServicePageResult = {
+  __typename?: 'ServicePageResult';
+  list: Array<Service>;
+  total: Scalars['Int']['output'];
 };
 
 export type Settings = {
@@ -237,34 +416,52 @@ export type Tariff = {
   __typename?: 'Tariff';
   endDate?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
   price: Scalars['Float']['output'];
+  service: Service;
+  serviceId: Scalars['Int']['output'];
   startDate: Scalars['String']['output'];
 };
 
 export type UpdateAddressInput = {
   address: Scalars['String']['input'];
+  city?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
+  zipCode?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateBillingInput = {
+  billingPeriod?: InputMaybe<Scalars['String']['input']>;
+  currentReading?: InputMaybe<Scalars['Float']['input']>;
+  dueDate?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
-  payment: Scalars['Float']['input'];
-  userId: Scalars['Int']['input'];
+  isPaid?: InputMaybe<Scalars['Boolean']['input']>;
+  previousReading?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type UpdateDeviceInput = {
   endDate?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
-  initialValue: Scalars['Float']['input'];
+  initialValue?: InputMaybe<Scalars['Float']['input']>;
+  meterNumber?: InputMaybe<Scalars['String']['input']>;
+  serviceId?: InputMaybe<Scalars['Int']['input']>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type UpdateServiceInput = {
+  id: Scalars['Int']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
-  startDate: Scalars['String']['input'];
+  unit?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateTariffInput = {
   endDate?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
-  price: Scalars['Float']['input'];
-  startDate: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  price?: InputMaybe<Scalars['Float']['input']>;
+  serviceId?: InputMaybe<Scalars['Int']['input']>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateUserInput = {
@@ -377,20 +574,30 @@ export type ResolversTypes = ResolversObject<{
   CreateAddressInput: CreateAddressInput;
   CreateBillingInput: CreateBillingInput;
   CreateDeviceInput: CreateDeviceInput;
+  CreateMeterReadingInput: CreateMeterReadingInput;
+  CreatePaymentInput: CreatePaymentInput;
+  CreateServiceInput: CreateServiceInput;
   CreateTariffInput: CreateTariffInput;
   CreateUserInput: CreateUserInput;
   Device: ResolverTypeWrapper<Device>;
   DevicePageResult: ResolverTypeWrapper<DevicePageResult>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  MeterReading: ResolverTypeWrapper<MeterReading>;
+  MeterReadingPageResult: ResolverTypeWrapper<MeterReadingPageResult>;
   Mutation: ResolverTypeWrapper<{}>;
+  Payment: ResolverTypeWrapper<Payment>;
+  PaymentPageResult: ResolverTypeWrapper<PaymentPageResult>;
   Query: ResolverTypeWrapper<{}>;
+  Service: ResolverTypeWrapper<Service>;
+  ServicePageResult: ResolverTypeWrapper<ServicePageResult>;
   Settings: ResolverTypeWrapper<Settings>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Tariff: ResolverTypeWrapper<Tariff>;
   UpdateAddressInput: UpdateAddressInput;
   UpdateBillingInput: UpdateBillingInput;
   UpdateDeviceInput: UpdateDeviceInput;
+  UpdateServiceInput: UpdateServiceInput;
   UpdateTariffInput: UpdateTariffInput;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
@@ -407,20 +614,30 @@ export type ResolversParentTypes = ResolversObject<{
   CreateAddressInput: CreateAddressInput;
   CreateBillingInput: CreateBillingInput;
   CreateDeviceInput: CreateDeviceInput;
+  CreateMeterReadingInput: CreateMeterReadingInput;
+  CreatePaymentInput: CreatePaymentInput;
+  CreateServiceInput: CreateServiceInput;
   CreateTariffInput: CreateTariffInput;
   CreateUserInput: CreateUserInput;
   Device: Device;
   DevicePageResult: DevicePageResult;
   Float: Scalars['Float']['output'];
   Int: Scalars['Int']['output'];
+  MeterReading: MeterReading;
+  MeterReadingPageResult: MeterReadingPageResult;
   Mutation: {};
+  Payment: Payment;
+  PaymentPageResult: PaymentPageResult;
   Query: {};
+  Service: Service;
+  ServicePageResult: ServicePageResult;
   Settings: Settings;
   String: Scalars['String']['output'];
   Tariff: Tariff;
   UpdateAddressInput: UpdateAddressInput;
   UpdateBillingInput: UpdateBillingInput;
   UpdateDeviceInput: UpdateDeviceInput;
+  UpdateServiceInput: UpdateServiceInput;
   UpdateTariffInput: UpdateTariffInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
@@ -429,7 +646,9 @@ export type ResolversParentTypes = ResolversObject<{
 
 export type AddressResolvers<ContextType = any, ParentType extends ResolversParentTypes['Address'] = ResolversParentTypes['Address']> = ResolversObject<{
   address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  city?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  zipCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -440,9 +659,18 @@ export type AddressPageResultResolvers<ContextType = any, ParentType extends Res
 }>;
 
 export type BillingResolvers<ContextType = any, ParentType extends ResolversParentTypes['Billing'] = ResolversParentTypes['Billing']> = ResolversObject<{
-  date?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  billingPeriod?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  consumption?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  currentReading?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  device?: Resolver<ResolversTypes['Device'], ParentType, ContextType>;
+  deviceId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  dueDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  payment?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  isPaid?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  previousReading?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  tariff?: Resolver<ResolversTypes['Tariff'], ParentType, ContextType>;
+  tariffId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -458,8 +686,13 @@ export type DeviceResolvers<ContextType = any, ParentType extends ResolversParen
   endDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   initialValue?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  meterNumber?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  readings?: Resolver<Array<ResolversTypes['MeterReading']>, ParentType, ContextType>;
+  service?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType>;
+  serviceId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   startDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  userId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -469,32 +702,96 @@ export type DevicePageResultResolvers<ContextType = any, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type MeterReadingResolvers<ContextType = any, ParentType extends ResolversParentTypes['MeterReading'] = ResolversParentTypes['MeterReading']> = ResolversObject<{
+  consumption?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  device?: Resolver<ResolversTypes['Device'], ParentType, ContextType>;
+  deviceId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  notes?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  readingDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type MeterReadingPageResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['MeterReadingPageResult'] = ResolversParentTypes['MeterReadingPageResult']> = ResolversObject<{
+  list?: Resolver<Array<ResolversTypes['MeterReading']>, ParentType, ContextType>;
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   createAddress?: Resolver<Maybe<ResolversTypes['Address']>, ParentType, ContextType, RequireFields<MutationCreateAddressArgs, 'address'>>;
   createBilling?: Resolver<Maybe<ResolversTypes['Billing']>, ParentType, ContextType, RequireFields<MutationCreateBillingArgs, 'billing'>>;
   createDevice?: Resolver<Maybe<ResolversTypes['Device']>, ParentType, ContextType, RequireFields<MutationCreateDeviceArgs, 'device'>>;
+  createPayment?: Resolver<Maybe<ResolversTypes['Payment']>, ParentType, ContextType, RequireFields<MutationCreatePaymentArgs, 'payment'>>;
+  createReading?: Resolver<Maybe<ResolversTypes['MeterReading']>, ParentType, ContextType, RequireFields<MutationCreateReadingArgs, 'reading'>>;
+  createService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationCreateServiceArgs, 'service'>>;
   createTariff?: Resolver<Maybe<ResolversTypes['Tariff']>, ParentType, ContextType, RequireFields<MutationCreateTariffArgs, 'tariff'>>;
   createUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<MutationCreateUserArgs>>;
   deleteAddress?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<MutationDeleteAddressArgs>>;
   deleteBilling?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<MutationDeleteBillingArgs>>;
   deleteDevice?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<MutationDeleteDeviceArgs>>;
+  deletePayment?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<MutationDeletePaymentArgs>>;
+  deleteReading?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<MutationDeleteReadingArgs>>;
+  deleteService?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<MutationDeleteServiceArgs>>;
   deleteTariff?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<MutationDeleteTariffArgs>>;
   deleteUser?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<MutationDeleteUserArgs>>;
   updateAddress?: Resolver<Maybe<ResolversTypes['Address']>, ParentType, ContextType, RequireFields<MutationUpdateAddressArgs, 'address'>>;
   updateBilling?: Resolver<Maybe<ResolversTypes['Billing']>, ParentType, ContextType, RequireFields<MutationUpdateBillingArgs, 'billing'>>;
   updateDevice?: Resolver<Maybe<ResolversTypes['Device']>, ParentType, ContextType, RequireFields<MutationUpdateDeviceArgs, 'device'>>;
+  updateService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationUpdateServiceArgs, 'service'>>;
   updateTariff?: Resolver<Maybe<ResolversTypes['Tariff']>, ParentType, ContextType, RequireFields<MutationUpdateTariffArgs, 'tariff'>>;
   updateUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<MutationUpdateUserArgs>>;
+}>;
+
+export type PaymentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Payment'] = ResolversParentTypes['Payment']> = ResolversObject<{
+  amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  billing?: Resolver<Maybe<ResolversTypes['Billing']>, ParentType, ContextType>;
+  billingId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  notes?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  paymentDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  paymentMethod?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  reference?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PaymentPageResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['PaymentPageResult'] = ResolversParentTypes['PaymentPageResult']> = ResolversObject<{
+  list?: Resolver<Array<ResolversTypes['Payment']>, ParentType, ContextType>;
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   address?: Resolver<Maybe<ResolversTypes['AddressPageResult']>, ParentType, ContextType, RequireFields<QueryAddressArgs, 'skip' | 'take'>>;
   billing?: Resolver<Maybe<ResolversTypes['BillingPageResult']>, ParentType, ContextType, RequireFields<QueryBillingArgs, 'skip' | 'take'>>;
   device?: Resolver<Maybe<ResolversTypes['DevicePageResult']>, ParentType, ContextType, RequireFields<QueryDeviceArgs, 'skip' | 'take'>>;
+  payments?: Resolver<Maybe<ResolversTypes['PaymentPageResult']>, ParentType, ContextType, RequireFields<QueryPaymentsArgs, 'skip' | 'take'>>;
+  readings?: Resolver<Maybe<ResolversTypes['MeterReadingPageResult']>, ParentType, ContextType, RequireFields<QueryReadingsArgs, 'deviceId' | 'skip' | 'take'>>;
   searchAddress?: Resolver<Array<Maybe<ResolversTypes['Address']>>, ParentType, ContextType, Partial<QuerySearchAddressArgs>>;
   searchDevice?: Resolver<Array<Maybe<ResolversTypes['Device']>>, ParentType, ContextType, Partial<QuerySearchDeviceArgs>>;
+  searchPayment?: Resolver<Array<Maybe<ResolversTypes['Payment']>>, ParentType, ContextType, Partial<QuerySearchPaymentArgs>>;
+  services?: Resolver<Maybe<ResolversTypes['ServicePageResult']>, ParentType, ContextType, RequireFields<QueryServicesArgs, 'skip' | 'take'>>;
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;
+  unpaidBillings?: Resolver<Maybe<ResolversTypes['BillingPageResult']>, ParentType, ContextType, RequireFields<QueryUnpaidBillingsArgs, 'skip' | 'take' | 'userId'>>;
   users?: Resolver<Maybe<ResolversTypes['UserPageResult']>, ParentType, ContextType, RequireFields<QueryUsersArgs, 'skip' | 'take'>>;
+}>;
+
+export type ServiceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Service'] = ResolversParentTypes['Service']> = ResolversObject<{
+  devices?: Resolver<Array<ResolversTypes['Device']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tariffs?: Resolver<Array<ResolversTypes['Tariff']>, ParentType, ContextType>;
+  unit?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ServicePageResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['ServicePageResult'] = ResolversParentTypes['ServicePageResult']> = ResolversObject<{
+  list?: Resolver<Array<ResolversTypes['Service']>, ParentType, ContextType>;
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type SettingsResolvers<ContextType = any, ParentType extends ResolversParentTypes['Settings'] = ResolversParentTypes['Settings']> = ResolversObject<{
@@ -505,7 +802,10 @@ export type SettingsResolvers<ContextType = any, ParentType extends ResolversPar
 export type TariffResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tariff'] = ResolversParentTypes['Tariff']> = ResolversObject<{
   endDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  service?: Resolver<ResolversTypes['Service'], ParentType, ContextType>;
+  serviceId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   startDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -537,8 +837,14 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   BillingPageResult?: BillingPageResultResolvers<ContextType>;
   Device?: DeviceResolvers<ContextType>;
   DevicePageResult?: DevicePageResultResolvers<ContextType>;
+  MeterReading?: MeterReadingResolvers<ContextType>;
+  MeterReadingPageResult?: MeterReadingPageResultResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  Payment?: PaymentResolvers<ContextType>;
+  PaymentPageResult?: PaymentPageResultResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Service?: ServiceResolvers<ContextType>;
+  ServicePageResult?: ServicePageResultResolvers<ContextType>;
   Settings?: SettingsResolvers<ContextType>;
   Tariff?: TariffResolvers<ContextType>;
   User?: UserResolvers<ContextType>;

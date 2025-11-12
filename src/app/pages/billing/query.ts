@@ -7,16 +7,35 @@ export const GET_BILLING_PAGE = gql`
       list {
         id
         userId
+        billingPeriod
+        currentReading
+        previousReading
+        consumption
+        amount
+        isPaid
+        dueDate
         user {
           id
           name
           email
           phone
-          addressId
           address {
-            id
             address
+            city
           }
+        }
+        device {
+          id
+          meterNumber
+          service {
+            name
+            unit
+          }
+        }
+        tariff {
+          id
+          name
+          price
         }
       }
       total
@@ -28,27 +47,37 @@ export const GET_BILLING = gql`
   query getBilling($id: ID!){
     billing(id: $id) {
       id
-      payment
       userId
+      billingPeriod
+      currentReading
+      previousReading
+      consumption
+      amount
+      isPaid
+      dueDate
       user {
         id
         name
         email
         phone
-        addressId
         balance
         address {
-          id
           address
+          city
         }
-        deviceId
-        device {
-          id
+      }
+      device {
+        id
+        meterNumber
+        service {
           name
-          initialValue
-          startDate
-          endDate
+          unit
         }
+      }
+      tariff {
+        id
+        name
+        price
       }
     }
   }
@@ -59,7 +88,11 @@ export const CREATE_BILLING = gql`
     createBilling(billing: $billing) {
       id
       userId
-      payment
+      billingPeriod
+      consumption
+      amount
+      isPaid
+      dueDate
     }
   }
 `;
@@ -68,8 +101,7 @@ export const UPDATE_BILLING = gql`
   mutation UpdateBilling($billing: UpdateBillingInput!){
     updateBilling(billing: $billing) {
       id
-      userId
-      payment
+      isPaid
     }
   }
 `;
@@ -77,5 +109,19 @@ export const UPDATE_BILLING = gql`
 export const DELETE_BILLING = gql`
   mutation DeleteBilling($billingId: Int){
     deleteBilling(billingId: $billingId)
+  }
+`;
+
+// Додатковий query для отримання останніх показань по лічильнику
+export const GET_LAST_READINGS = gql`
+  query GetLastReadings($deviceId: Int!, $take: Int!, $skip: Int!) {
+    readings(deviceId: $deviceId, take: $take, skip: $skip) {
+      list {
+        id
+        value
+        readingDate
+      }
+      total
+    }
   }
 `;

@@ -28,7 +28,9 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 export const { getClient, query, PreloadQuery } = registerApolloClient(() => {
   return new ApolloClient({
     cache: new InMemoryCache(),
-
+    devtools: {
+      enabled: process.env.NODE_ENV === "development",
+    },
     link: from([
       errorLink,
       new HttpLink({

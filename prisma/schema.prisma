@@ -1,12 +1,8 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -15,39 +11,102 @@ datasource db {
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   smId      String?
-  email     String? @unique
+  email     String?   @unique
   name      String?
   phone     String?
   addressId Int?
-  deviceId  Int?
-  balance   Float?  @default(0.0)
+  address   Address?  @relation(fields: [addressId], references: [id], onDelete: SetNull)
+  balance   Float?    @default(0.0)
+  devices   Device[]
+  billings  Billing[]
+  payments  Payment[]
 }
 
 model Address {
-  id      Int    @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
   address String
+  city    String?
+  zipCode String?
+  users   User[]
+}
+
+model Service {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique // "Вода", "Газ", "Електрика"
+  unit    String // м³, кВт•ч
+  tariffs Tariff[]
+  devices Device[]
 }
 
 model Device {
-  id           Int     @id @default(autoincrement())
-  name         String?
+  id           Int            @id @default(autoincrement())
+  userId       Int?
+  user         User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  serviceId    Int? // Опціонально для старих записів
+  service      Service?       @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  meterNumber  String?        @unique // Опціонально для старих записів
   initialValue Float
   startDate    String
   endDate      String?
+  readings     MeterReading[]
+  billings     Billing[]
+}
+
+model MeterReading {
+  id          Int      @id @default(autoincrement())
+  deviceId    Int
+  device      Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  readingDate String // Дата зняття показань (YYYY-MM-DD)
+  value       Float // Поточні показання
+  consumption Float? // Розраховане споживання (value - попереднє)
+  notes       String?
+  createdAt   DateTime @default(now())
 }
 
 model Tariff {
-  id        Int     @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
+  serviceId Int? // Опціонально для старих записів
+  service   Service?  @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  name      String? // "Тариф для ФОП", "Побутовий тариф"
   price     Float
   startDate String
   endDate   String?
+  billings  Billing[]
 }
 
 model Billing {
-  id      Int    @id @default(autoincrement())
-  userId  Int
-  payment Float
-  date    String
+  id              Int       @id @default(autoincrement())
+  userId          Int
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deviceId        Int? // Опціонально для старих записів
+  device          Device?   @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+  tariffId        Int? // Опціонально для старих записів
+  tariff          Tariff?   @relation(fields: [tariffId], references: [id], onDelete: SetNull)
+  billingPeriod   String? // Період білінгу (YYYY-MM)
+  previousReading Float? // Попереднього показання
+  currentReading  Float? // Поточне показання
+  consumption     Float? // Розраховане споживання
+  amount          Float? // Сума до сплати (consumption * price)
+  dueDate         String? // Крайній термін оплати (YYYY-MM-DD)
+  isPaid          Boolean   @default(false)
+  payments        Payment[]
+  createdAt       DateTime  @default(now())
+  payment         Float? // Старе поле для сумісності
+  date            String? // Старе поле для сумісності
+}
+
+model Payment {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  billingId     Int?
+  billing       Billing? @relation(fields: [billingId], references: [id], onDelete: SetNull)
+  amount        Float // Сума платежу
+  paymentMethod String // "готівка", "переказ", "карта"
+  paymentDate   String // Дата платежу (YYYY-MM-DD)
+  reference     String? // Номер переказу/чека
+  notes         String?
+  createdAt     DateTime @default(now())
 }

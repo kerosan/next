@@ -42,6 +42,8 @@ input UpdateUserInput {
 type Address {
   id: Int
   address: String
+  city: String
+  zipCode: String
 }
 
 type AddressPageResult {
@@ -51,19 +53,28 @@ type AddressPageResult {
 
 input CreateAddressInput {
   address: String!
+  city: String
+  zipCode: String
 }
 
 input UpdateAddressInput {
   id: Int!
   address: String!
+  city: String
+  zipCode: String
 }
 
 type Device {
   id: Int!
-  name: String
+  userId: Int
+  user: User
+  serviceId: Int
+  service: Service
+  meterNumber: String
   initialValue: Float!
   startDate: String!
   endDate: String
+  readings: [MeterReading!]!
 }
 
 type DevicePageResult {
@@ -72,7 +83,9 @@ type DevicePageResult {
 }
 
 input CreateDeviceInput {
-  name: String
+  userId: Int
+  serviceId: Int
+  meterNumber: String
   initialValue: Float!
   startDate: String!
   endDate: String
@@ -80,9 +93,11 @@ input CreateDeviceInput {
 
 input UpdateDeviceInput {
   id: Int!
-  name: String
-  initialValue: Float!
-  startDate: String!
+  userId: Int
+  serviceId: Int
+  meterNumber: String
+  initialValue: Float
+  startDate: String
   endDate: String
 }
 
@@ -90,8 +105,17 @@ type Billing {
   id: Int!
   userId: Int!
   user: User!
-  payment: Float!
-  date: String!
+  deviceId: Int!
+  device: Device!
+  tariffId: Int!
+  tariff: Tariff!
+  billingPeriod: String!
+  previousReading: Float!
+  currentReading: Float!
+  consumption: Float!
+  amount: Float!
+  dueDate: String!
+  isPaid: Boolean!
 }
 
 type BillingPageResult {
@@ -101,27 +125,167 @@ type BillingPageResult {
 
 input CreateBillingInput {
   userId: Int!
-  payment: Float!
+  deviceId: Int!
+  tariffId: Int!
+  billingPeriod: String!
+  previousReading: Float!
+  currentReading: Float!
+  dueDate: String!
 }
 
 input UpdateBillingInput {
   id: Int!
-  userId: Int!
-  payment: Float!
+  billingPeriod: String
+  previousReading: Float
+  currentReading: Float
+  dueDate: String
+  isPaid: Boolean
 }
 
 type Settings {
   tariff: [Tariff!]!
 }
 
+type Service {
+  id: Int!
+  name: String!
+  unit: String!
+  tariffs: [Tariff!]!
+  devices: [Device!]!
+}
+
+type ServicePageResult {
+  list: [Service!]!
+  total: Int!
+}
+
+input CreateServiceInput {
+  name: String!
+  unit: String!
+}
+
+input UpdateServiceInput {
+  id: Int!
+  name: String
+  unit: String
+}
+
+type MeterReading {
+  id: Int!
+  deviceId: Int!
+  device: Device!
+  readingDate: String!
+  value: Float!
+  consumption: Float
+  notes: String
+}
+
+type MeterReadingPageResult {
+  list: [MeterReading!]!
+  total: Int!
+}
+
+input CreateMeterReadingInput {
+  deviceId: Int!
+  readingDate: String!
+  value: Float!
+  notes: String
+}
+
+type Payment {
+  id: Int!
+  userId: Int!
+  user: User!
+  billingId: Int
+  billing: Billing
+  amount: Float!
+  paymentMethod: String!
+  paymentDate: String!
+  reference: String
+  notes: String
+}
+
+type PaymentPageResult {
+  list: [Payment!]!
+  total: Int!
+}
+
+input CreatePaymentInput {
+  userId: Int!
+  billingId: Int
+  amount: Float!
+  paymentMethod: String!
+  paymentDate: String!
+  reference: String
+  notes: String
+}
+
+type ConsumptionReading {
+  period: String!
+  value: Float!
+  consumption: Float
+  service: String!
+}
+
+type ConsumptionReport {
+  userId: Int!
+  userName: String!
+  totalConsumption: Float!
+  averageMonthlyConsumption: Float!
+  readings: [ConsumptionReading!]!
+}
+
+type DebtUser {
+  userId: Int!
+  userName: String!
+  totalDebt: Float!
+  dueCount: Int!
+  overdueCount: Int!
+}
+
+type DebtReport {
+  totalDebt: Float!
+  overdueDebt: Float!
+  billingCount: Int!
+  overdueCount: Int!
+  users: [DebtUser!]!
+}
+
+type MonthlyRevenueData {
+  month: String!
+  billed: Float!
+  paid: Float!
+  collected: Float!
+}
+
+type PaymentMethodStats {
+  method: String!
+  count: Int!
+  amount: Float!
+}
+
+type RevenueReport {
+  totalRevenue: Float!
+  totalBilled: Float!
+  totalPaid: Float!
+  collectionRate: Float!
+  monthlyData: [MonthlyRevenueData!]!
+  paymentMethods: [PaymentMethodStats!]!
+}
+
 type Tariff {
   id: Int!
+  serviceId: Int!
+  service: Service!
+  name: String!
   price: Float!
   startDate: String!
   endDate: String
 }
 
 input CreateTariffInput {
+  serviceId: Int!
+  name: String!
   price: Float!
   startDate: String!
   endDate: String
@@ -129,8 +293,10 @@ input CreateTariffInput {
 
 input UpdateTariffInput {
   id: Int!
-  price: Float!
-  startDate: String!
+  serviceId: Int
+  name: String
+  price: Float
+  startDate: String
   endDate: String
 }
 
@@ -142,6 +308,14 @@ type Query {
   searchAddress(text: String): [Address]!
   searchDevice(text: String): [Device]!
   settings: Settings!
+  services(take: Int!, skip: Int!): ServicePageResult
+  readings(deviceId: Int!, take: Int!, skip: Int!): MeterReadingPageResult
+  payments(take: Int!, skip: Int!): PaymentPageResult
+  searchPayment(reference: String): [Payment]!
+  unpaidBillings(userId: Int!, take: Int!, skip: Int!): BillingPageResult
+  consumptionReport(userId: Int!, months: Int!): ConsumptionReport
+  debtReport: DebtReport
+  revenueReport(monthsBack: Int!): RevenueReport
 }
 
 type Mutation {
@@ -164,4 +338,14 @@ type Mutation {
   createTariff(tariff: CreateTariffInput!): Tariff
   updateTariff(tariff: UpdateTariffInput!): Tariff
   deleteTariff(tariffId: Int): Int
+
+  createService(service: CreateServiceInput!): Service
+  updateService(service: UpdateServiceInput!): Service
+  deleteService(serviceId: Int): Int
+
+  createReading(reading: CreateMeterReadingInput!): MeterReading
+  deleteReading(readingId: Int): Int
+
+  createPayment(payment: CreatePaymentInput!): Payment
+  deletePayment(paymentId: Int): Int
 }

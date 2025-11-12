@@ -6,6 +6,8 @@ export const GET_ADDRESS_PAGE = gql`
       list {
         id
         address
+        city
+        zipCode
       }
       total
     }
@@ -17,6 +19,8 @@ export const SEARCH_ADDRESS = gql`
     searchAddress(text: $text) {
       id
       address
+      city
+      zipCode
     }
   }
 `;
@@ -35,6 +39,8 @@ export const CREATE_ADDRESS = gql`
     createAddress(address: $address) {
       id
       address
+      city
+      zipCode
     }
   }
 `;
@@ -44,6 +50,8 @@ export const UPDATE_ADDRESS = gql`
     updateAddress(address: $address) {
       id
       address
+      city
+      zipCode
     }
   }
 `;

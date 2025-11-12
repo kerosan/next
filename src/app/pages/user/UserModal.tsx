@@ -78,7 +78,7 @@ export const UserModal: FC<
   return (
     <Modal
       {...props}
-      title={props.user ? `Edit user #${props.user.id}` : "Add user"}
+      title={props.user ? `Редагувати абонента #${props.user.id}` : "Додати абонента"}
       okButtonProps={{ autoFocus: true, htmlType: "submit" }}
       destroyOnClose
       modalRender={(dom) => (
@@ -109,28 +109,34 @@ export const UserModal: FC<
         </Form>
       )}
     >
-      <Field label="Name" name="name" required colon>
+      <Field 
+        label="Ім'я" 
+        name="name" 
+        rules={[{ required: true, message: "Будь ласка, введіть ім'я абонента" }]}
+      >
+        <Input placeholder="Ім'я та прізвище" />
+      </Field>
+      <Field label="Телефон" name="phone">
+        <Input placeholder="+38 (095) 123-45-67" />
+      </Field>
+      <Field label="Email" name="email">
+        <Input type="email" placeholder="example@mail.com" />
+      </Field>
+      <Field label="ID Адреси" name="addressId" hidden>
         <Input />
       </Field>
-      <Field label="Phone" name="phone" required colon>
-        <Input />
-      </Field>
-      <Field label="Email" name="email" colon>
-        <Input />
-      </Field>
-      <Field label="AddressId" name="addressId" hidden>
-        <Input />
-      </Field>
-      <Field label="Address" name="address" colon>
+      <Field label="Адреса" name="address">
         <AutoComplete
           allowClear
+          placeholder="Виберіть адресу абонента"
           onFocus={async () => {
             if (!form.getFieldValue("address")) {
               const { data } = await props.onSearchAddress("");
               setState({
                 addressOptions: data.searchAddress?.map((i) => ({
-                  title: i?.address ?? "",
+                  title: `${i?.address}${i?.city ? `, ${i.city}` : ""}`,
                   value: i?.id?.toString(),
+                  id: i?.id,
                 })),
               });
             }
@@ -144,8 +150,9 @@ export const UserModal: FC<
 
             setState({
               addressOptions: data.searchAddress?.map((i) => ({
-                title: i?.address ?? "",
+                title: `${i?.address}${i?.city ? `, ${i.city}` : ""}`,
                 value: i?.id?.toString(),
+                id: i?.id,
               })),
             });
           }}
@@ -153,19 +160,21 @@ export const UserModal: FC<
           options={state.addressOptions}
         />
       </Field>
-      <Field label="DeviceId" name="deviceId" hidden>
+      <Field label="ID Лічильника" name="deviceId" hidden>
         <Input />
       </Field>
-      <Field label="Device" name="device">
+      <Field label="Лічильник" name="device">
         <AutoComplete
           allowClear
+          placeholder="Виберіть лічильник"
           onFocus={async () => {
             if (!form.getFieldValue("device")) {
               const { data } = await props.onSearchDevice("");
               setState({
                 deviceOptions: data.searchDevice?.map((i) => ({
-                  title: i?.name ?? "",
+                  title: i?.meterNumber ?? `Лічильник #${i?.id}`,
                   value: i?.id?.toString(),
+                  id: i?.id,
                 })),
               });
             }
@@ -179,8 +188,9 @@ export const UserModal: FC<
 
             setState({
               deviceOptions: data.searchDevice?.map((i) => ({
-                title: i?.name ?? "",
+                title: i?.meterNumber ?? `Лічильник #${i?.id}`,
                 value: i?.id?.toString(),
+                id: i?.id,
               })),
             });
           }}

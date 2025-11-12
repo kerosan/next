@@ -11,10 +11,12 @@ export const GET_USUERS_PAGE = gql`
           address {
             id
             address
+            city
+            zipCode
           }
           device {
             id
-            name
+            meterNumber
           }
           balance
           }
@@ -28,6 +30,18 @@ export const SEARCH_ADDRESS = gql`
     searchAddress(text: $text) {
       id
       address
+      city
+      zipCode
+    }
+  }
+`;
+
+export const SEARCH_DEVICE = gql`
+  query SearchDevice($text: String){
+    searchDevice(text: $text) {
+      id
+      meterNumber
+      serviceId
     }
   }
 `;

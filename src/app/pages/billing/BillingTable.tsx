@@ -9,9 +9,12 @@ import {
   type TablePaginationConfig,
   Typography,
   type TableColumnsType,
+  Tag,
+  Select,
+  Space,
 } from "antd";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import { useRef, type FC } from "react";
+import { DeleteOutlined, EditOutlined, PlusOutlined, CheckOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { useRef, useState, type FC } from "react";
 import { useLocalState } from "@/utils/useLocalState";
 import { useQuery } from "@apollo/client";
 import { BillingModal } from "./BillingModal";
@@ -28,12 +31,27 @@ type State = {
   pagination: Pick<TablePaginationConfig, "current" | "pageSize">;
 };
 
+// Визначення статусу рахунку
+const getBillingStatus = (billing: Billing) => {
+  if (billing.isPaid) {
+    return "paid";
+  }
+  if (billing.dueDate && dayjs(billing.dueDate).isBefore(dayjs())) {
+    return "overdue";
+  }
+  return "pending";
+};
+
 export const BillingTable: FC<{
   onCreate: typeof onCreate;
   onUpdate: typeof onUpdate;
   onDelete: typeof onDelete;
 }> = (props) => {
   const addRef = useRef<HTMLButtonElement>(null);
+  const [filterStatus, setFilterStatus] = useState<string | undefined>(undefined);
+
+  const addRef = useRef<HTMLButtonElement>(null);
+  const [filterStatus, setFilterStatus] = useState<string | undefined>(undefined);
 
   useKey("+", () => {
     addRef.current?.click();
@@ -61,49 +79,101 @@ export const BillingTable: FC<{
     throw error;
   }
 
-  const columns: TableColumnsType = [
+  // Фільтрація за статусом
+  const filteredBillings = filterStatus
+    ? data?.billing?.list?.filter((b) => getBillingStatus(b) === filterStatus)
+    : data?.billing?.list;
+
+  const renderStatusTag = (billing: Billing) => {
+    const status = getBillingStatus(billing);
+    
+    switch (status) {
+      case "paid":
+        return <Tag icon={<CheckOutlined />} color="green">Сплачено</Tag>;
+      case "overdue":
+        return <Tag icon={<ExclamationCircleOutlined />} color="red">Прострочено</Tag>;
+      case "pending":
+        return <Tag icon={<ClockCircleOutlined />} color="orange">Очікується</Tag>;
+      default:
+        return null;
+    }
+  };
+
+  const columns: TableColumnsType<Billing> = [
     {
       key: 0,
-      title: "id",
+      title: "ID",
       dataIndex: "id",
+      width: 60,
     },
     {
       key: 1,
-      title: "User",
-      dataIndex: "user.name",
+      title: "Абонент",
+      render: (_, row) => row.user?.name || "—",
+      width: "15%",
+    },
+    {
+      key: 2,
+      title: "Адреса",
+      render: (_, row) => {
+        const addr = row.user?.address?.address;
+        const city = row.user?.address?.city;
+        return city ? `${addr}, ${city}` : addr || "—";
+      },
+      width: "18%",
     },
     {
       key: 3,
-      title: "Date",
-      dataIndex: "date",
-      render: (_, row) => {
-        return dayjs(row.startDate).isValid()
-          ? dayjs(row.startDate).format("DD-MMM-YYYY")
-          : "";
-      },
+      title: "Лічильник",
+      render: (_, row) => `${row.device?.meterNumber} (${row.device?.service?.name})`,
+      width: "15%",
     },
     {
       key: 4,
-      title: "Payment",
-      dataIndex: "payment",
+      title: "Період",
+      dataIndex: "billingPeriod",
+      width: "10%",
     },
     {
-      title: "operation",
-      dataIndex: "operation",
+      key: 5,
+      title: "Сума",
+      dataIndex: "amount",
+      render: (value) => `${value?.toFixed(2) || "0.00"} ₴`,
       width: "10%",
+    },
+    {
+      key: 6,
+      title: "Крайній термін",
+      dataIndex: "dueDate",
+      render: (value) =>
+        dayjs(value).isValid() ? dayjs(value).format("DD-MMM-YYYY") : "—",
+      width: "12%",
+    },
+    {
+      key: 7,
+      title: "Статус",
+      render: (_, row) => renderStatusTag(row),
+      width: "12%",
+    },
+    {
+      title: "Дії",
+      dataIndex: "operation",
+      width: "8%",
       render: (_, row) => (
-        <>
+        <Space>
           <Button
+            size="small"
             icon={<EditOutlined />}
             onClick={() => {
-              const r = setState({
+              setState({
                 open: true,
                 current: row as Billing,
               });
             }}
-          />{" "}
+          />
           <Popconfirm
-            title="Sure to delete?"
+            title="Видалити рахунок?"
+            description="Ця дія не може бути скасована"
             onConfirm={async () => {
               console.log("onConfirm", { row });
               await props.onDelete(row.id);
@@ -112,24 +182,36 @@ export const BillingTable: FC<{
                 skip: skip(state.pagination),
               });
             }}
+            okText="Так"
+            cancelText="Ні"
           >
-            <Button icon={<DeleteOutlined />} />
+            <Button size="small" danger icon={<DeleteOutlined />} />
           </Popconfirm>
-        </>
+        </Space>
       ),
     },
   ];
 
   return (
-    <Card>
-      <Flex align="baseline" justify="space-between">
-        <Typography.Title>Billing</Typography.Title>
-        <Button
-          ref={addRef}
-          icon={<PlusOutlined />}
-          onClick={() => setState({ current: undefined, open: true })}
-        />
-      </Flex>
+    <Card title="Рахунки">
+      <Space direction="vertical" style={{ width: "100%", marginBottom: "16px" }} size="large">
+        <div>
+          <label style={{ marginRight: "10px" }}>Фільтр за статусом:</label>
+          <Select
+            style={{ width: "250px" }}
+            placeholder="Усі статуси"
+            value={filterStatus || undefined}
+            onChange={(value) => setFilterStatus(value)}
+            allowClear
+            options={[
+              { label: "Очікується", value: "pending" },
+              { label: "Сплачено", value: "paid" },
+              { label: "Прострочено", value: "overdue" },
+            ]}
+          />
+        </div>
+      </Space>
+
       {state.open ? (
         <BillingModal
           open={state.open}
@@ -168,10 +250,10 @@ export const BillingTable: FC<{
         bordered
         rowKey={"id"}
         columns={columns}
-        dataSource={data?.billing?.list ?? []}
+        dataSource={filteredBillings ?? []}
         pagination={{
           ...state.pagination,
-          total: data?.billing.total,
+          total: filteredBillings?.length,
           onChange: async (current, pageSize) => {
             setState({ pagination: { current, pageSize } });
             await fetchMore({

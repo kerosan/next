@@ -2,7 +2,7 @@
 
 import type { Address } from "@/graphql/resolvers-types";
 import { useLocalState } from "@/utils/useLocalState";
-import { Modal, Form, AutoComplete } from "antd";
+import { Modal, Form, AutoComplete, Input } from "antd";
 import type { AutoCompleteProps, ModalProps } from "antd";
 import { useEffect, type FC } from "react";
 import type { onCreate, onSearchAddress, onUpdate } from "./action";
@@ -52,7 +52,7 @@ export const AddressModal: FC<
     <Modal
       {...props}
       title={
-        props.address ? `Edit address #${props.address.id}` : "Add address"
+        props.address ? `Редагувати адресу #${props.address.id}` : "Додати адресу"
       }
       okButtonProps={{ autoFocus: true, htmlType: "submit" }}
       destroyOnClose
@@ -75,9 +75,14 @@ export const AddressModal: FC<
         </Form>
       )}
     >
-      <Field label="Address" name="address" colon>
+      <Field 
+        label="Адреса" 
+        name="address" 
+        rules={[{ required: true, message: "Будь ласка, введіть адресу" }]}
+      >
         <AutoComplete
           allowClear
+          placeholder="Вулиця, будинок, квартира"
           onFocus={async () => {
             if (!form.getFieldValue("address")) {
               const { data } = await props.onSearchAddress("");
@@ -106,6 +111,12 @@ export const AddressModal: FC<
           }}
           options={state.addressOptions}
         />
+      </Field>
+      <Field label="Місто" name="city">
+        <Input placeholder="Наприклад: Київ, Львів" />
+      </Field>
+      <Field label="Поштовий індекс" name="zipCode">
+        <Input placeholder="Наприклад: 01001" />
       </Field>
     </Modal>
   );

@@ -1,9 +1,12 @@
 "use client";
 
-import { Modal, Form, Input, DatePicker, Row, Col, InputNumber } from "antd";
+import { Modal, Form, Input, DatePicker, Row, Col, InputNumber, Select } from "antd";
 import type { ModalProps } from "antd";
 import { useEffect, type FC } from "react";
 import type { onCreateTariff, onUpdateTariff } from "./action";
+import { GET_SERVICES_LIST } from "./query";
+import { useQuery } from "@apollo/client";
+import type { Query } from "@/graphql/resolvers-types";
 import type { Tariff } from "@/graphql/resolvers-types";
 
 const Field = Form.Item;
@@ -22,6 +25,10 @@ export const TariffModal: FC<
       form.resetFields();
     }
   }, [form, props.open, props.tariff]);
+
+  const { data: servicesData } = useQuery<{
+    services: Query["services"];
+  }>(GET_SERVICES_LIST, { fetchPolicy: "cache-first" });
 
   return (
     <Modal
@@ -49,6 +56,20 @@ export const TariffModal: FC<
         </Form>
       )}
     >
+      <Field label="Service" name="serviceId" colon required>
+        <Select
+          showSearch
+          options={servicesData?.services.list.map((s) => ({
+            label: `${s.name} (${s.unit})`,
+            value: s.id,
+          }))}
+        />
+      </Field>
+
+      <Field label="Name" name="name" colon>
+        <Input />
+      </Field>
+
       <Field label="Price" name="price" colon>
         <InputNumber
           stringMode

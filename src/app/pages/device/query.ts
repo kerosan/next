@@ -40,7 +40,7 @@ export const SEARCH_DEVICE = gql`
 
 export const GET_DEVICE = gql`
   query getDevice($id: ID!){
-    device(id: $id) {
+    getDevice(id: $id) {
       id
       meterNumber
       initialValue

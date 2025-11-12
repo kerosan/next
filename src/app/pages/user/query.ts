@@ -14,7 +14,7 @@ export const GET_USUERS_PAGE = gql`
             city
             zipCode
           }
-          device {
+          devices {
             id
             meterNumber
           }

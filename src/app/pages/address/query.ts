@@ -27,7 +27,7 @@ export const SEARCH_ADDRESS = gql`
 
 export const GET_ADDRESS = gql`
   query getAddress($id: ID!) {
-    address(id: $id) {
+    getAddress(id: $id) {
       id
       address
     }

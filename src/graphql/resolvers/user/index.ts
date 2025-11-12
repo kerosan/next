@@ -7,9 +7,13 @@ export const User: Resolvers["User"] = {
       where: { id: Number(parent.addressId) },
     });
   },
-  device: async (parent, args, ctx, info) => {
-    return await prisma.device.findFirst({
-      where: { id: Number(parent.deviceId) },
+  devices: async (parent, args, ctx, info) => {
+    return await prisma.device.findMany({
+      where: { userId: Number(parent.id) },
+      include: {
+        readings: true,
+        service: true,
+      },
     });
   },
 };

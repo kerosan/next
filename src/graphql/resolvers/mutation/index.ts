@@ -18,13 +18,10 @@ export const Mutation: Resolvers["Mutation"] = {
     const user = await prisma.user.update({
       where: { id: Number(args.user?.id) },
       data: {
-        // ...args.user,
-        // id: Number(args.user?.id),
         smId: args.user?.smId || "",
         name: args.user?.name,
         phone: args.user?.phone,
         addressId: args.user?.addressId,
-        deviceId: args.user?.deviceId,
       },
     });
     return user;

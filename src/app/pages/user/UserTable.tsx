@@ -74,14 +74,14 @@ export const UserTable: FC<{
     },
     {
       key: 1,
-      title: "Ім'я",
+      title: "Name",
       dataIndex: "name",
       width: "20%",
       sorter: (a, b) => (a.name || "").localeCompare(b.name || ""),
     },
     {
       key: 2,
-      title: "Телефон",
+      title: "Phone",
       dataIndex: "phone",
       width: "15%",
     },
@@ -93,7 +93,7 @@ export const UserTable: FC<{
     },
     {
       key: 4,
-      title: "Адреса",
+      title: "Address",
       render: (_, row) => {
         const addr = row.address?.address;
         const city = row.address?.city;
@@ -103,13 +103,13 @@ export const UserTable: FC<{
     },
     {
       key: 5,
-      title: "Баланс",
+      title: "Balance",
       dataIndex: "balance",
       width: "10%",
       render: (balance) => `${balance?.toFixed(2) || "0.00"} ₴`,
     },
     {
-      title: "Дії",
+      title: "Actions",
       dataIndex: "operation",
       width: "12%",
       render: (_, row) => (
@@ -122,15 +122,15 @@ export const UserTable: FC<{
             }}
           />{" "}
           <Popconfirm
-            title="Видалити абонента?"
-            description="Ця дія не може бути скасована"
+            title="Delete subscriber?"
+            description="This action cannot be undone"
             onConfirm={async () => {
               console.log("onConfirm", { row });
               await props.onDelete(row.id);
               await refetch();
             }}
-            okText="Так"
-            cancelText="Ні"
+            okText="Yes"
+            cancelText="No"
           >
             <Button icon={<DeleteOutlined />} danger size="small" />
           </Popconfirm>

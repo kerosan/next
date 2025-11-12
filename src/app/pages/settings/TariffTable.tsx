@@ -45,6 +45,16 @@ export const TariffTable: FC<{
     },
     {
       key: 1,
+      title: "Service",
+      render: (_, row) => row.service?.name || "—",
+    },
+    {
+      key: 2,
+      title: "Unit",
+      render: (_, row) => row.service?.unit || "—",
+    },
+    {
+      key: 3,
       title: "Price",
       dataIndex: "price",
     },
@@ -66,7 +76,7 @@ export const TariffTable: FC<{
           <Button
             icon={<EditOutlined />}
             onClick={() => {
-              setState({ openTariffModal: false, current: row as Tariff });
+              setState({ openTariffModal: true, current: row as Tariff });
             }}
           />
           <Popconfirm

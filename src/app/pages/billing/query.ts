@@ -45,7 +45,7 @@ export const GET_BILLING_PAGE = gql`
 
 export const GET_BILLING = gql`
   query getBilling($id: ID!){
-    billing(id: $id) {
+    getBilling(id: $id) {
       id
       userId
       billingPeriod

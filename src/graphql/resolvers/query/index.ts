@@ -13,7 +13,7 @@ export const Query: Resolvers["Query"] = {
       }),
     ]);
 
-    return { list, total };
+    return { list: list as any, total } as any;
   },
   searchAddress: async (parent, args) => {
     return await prisma.address.findMany({
@@ -35,7 +35,7 @@ export const Query: Resolvers["Query"] = {
       }),
     ]);
 
-    return { list, total };
+    return { list: list as any, total } as any;
   },
   device: async (parent, args) => {
     const [total, list] = await prisma.$transaction([
@@ -43,20 +43,30 @@ export const Query: Resolvers["Query"] = {
       prisma.device.findMany({
         take: args.take,
         skip: args.skip,
-        orderBy: { name: "asc" },
+        orderBy: { id: "asc" },
+        include: {
+          service: true,
+          readings: true,
+        },
       }),
     ]);
 
-    return { list, total };
+    return { list: list as any, total } as any;
   },
   searchDevice: async (parent, args) => {
     return await prisma.device.findMany({
       where: {
-        name: {
+        meterNumber: {
           contains: args.text ?? "",
         },
       },
       take: 10,
+    });
+  },
+  getDevice: async (parent, args) => {
+    return await prisma.device.findUnique({
+      where: { id: Number(args.id) },
+      include: { service: true, readings: true },
     });
   },
   users: async (parent, args) => {
@@ -65,11 +75,15 @@ export const Query: Resolvers["Query"] = {
       prisma.user.findMany({
         take: args.take,
         skip: args.skip,
+        include: {
+          address: true,
+          devices: true,
+        },
         orderBy: { name: "asc" },
       }),
     ]);
 
-    return { list, total };
+    return { list: list as any, total } as any;
   },
   settings: async (parent, args) => {
     const tariff = await prisma.tariff.findMany();
@@ -85,7 +99,7 @@ export const Query: Resolvers["Query"] = {
       }),
     ]);
 
-    return { list, total };
+    return { list: list as any, total } as any;
   },
   readings: async (parent, args) => {
     const [total, list] = await prisma.$transaction([
@@ -100,7 +114,7 @@ export const Query: Resolvers["Query"] = {
       }),
     ]);
 
-    return { list, total };
+    return { list: list as any, total } as any;
   },
   payments: async (parent, args) => {
     const [total, list] = await prisma.$transaction([
@@ -112,7 +126,7 @@ export const Query: Resolvers["Query"] = {
       }),
     ]);
 
-    return { list, total };
+    return { list: list as any, total } as any;
   },
   searchPayment: async (parent, args) => {
     return await prisma.payment.findMany({
@@ -137,7 +151,7 @@ export const Query: Resolvers["Query"] = {
       }),
     ]);
 
-    return { list, total };
+    return { list: list as any, total } as any;
   },
   consumptionReport: async (parent, args) => {
     const user = await prisma.user.findUnique({

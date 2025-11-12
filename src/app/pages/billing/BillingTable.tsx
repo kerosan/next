@@ -50,9 +50,6 @@ export const BillingTable: FC<{
   const addRef = useRef<HTMLButtonElement>(null);
   const [filterStatus, setFilterStatus] = useState<string | undefined>(undefined);
 
-  const addRef = useRef<HTMLButtonElement>(null);
-  const [filterStatus, setFilterStatus] = useState<string | undefined>(undefined);
-
   useKey("+", () => {
     addRef.current?.click();
   });

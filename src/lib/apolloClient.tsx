@@ -1,10 +1,5 @@
-import { HttpLink, from } from "@apollo/client";
+import { ApolloClient, HttpLink, InMemoryCache, from } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
-import {
-  registerApolloClient,
-  ApolloClient,
-  InMemoryCache,
-} from "@apollo/experimental-nextjs-app-support";
 
 // import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 
@@ -25,21 +20,29 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (networkError) console.error(`[Network error]: ${networkError}`);
 });
 
-export const { getClient, query, PreloadQuery } = registerApolloClient(() => {
+export const getClient = async () => {
+  // Create a fresh ApolloClient instance. Server actions call this and may
+  // expect a new client per call.
   return new ApolloClient({
+    ssrMode: true,
     cache: new InMemoryCache(),
-    devtools: {
-      enabled: process.env.NODE_ENV === "development",
-    },
     link: from([
       errorLink,
       new HttpLink({
-        // this needs to be an absolute url, as relative urls cannot be used in SSR
-        uri: process.env.API_URL,
-        // you can disable result caching here if you want to
-        // (this does not work if you are rendering your page with `export const dynamic = "force-static"`)
+        uri: process.env.API_URL || "/graphql",
         fetchOptions: { cache: "no-store" },
+        // Ensure fetch is available in Node (Next provides global fetch)
+        fetch: globalThis.fetch as any,
       }),
     ]),
   });
-});
+};
+
+// Backwards-compatible named exports used elsewhere in the codebase.
+export const query = async (options: any) => {
+  const client = await getClient();
+  return client.query(options);
+};
+
+// PreloadQuery is not used in this repo; export a noop to keep imports safe.
+export const PreloadQuery = (_q: any, _vars?: any) => Promise.resolve();

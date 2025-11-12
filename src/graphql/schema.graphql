@@ -1,3 +1,5 @@
+scalar DateTime
+
 type User {
   id: Int
   smId: String
@@ -6,8 +8,7 @@ type User {
   phone: String
   addressId: Int
   address: Address
-  deviceId: Int
-  device: Device
+  devices: [Device!]!
   balance: Float
 }
 
@@ -21,10 +22,7 @@ input CreateUserInput {
   email: String
   name: String
   phone: String
-  # address: String
   addressId: Int
-  # device: String
-  deviceId: Int
 }
 
 input UpdateUserInput {
@@ -33,10 +31,7 @@ input UpdateUserInput {
   email: String
   name: String
   phone: String
-  # address: String
   addressId: Int
-  # device: String
-  deviceId: Int
 }
 
 type Address {
@@ -116,6 +111,7 @@ type Billing {
   amount: Float!
   dueDate: String!
   isPaid: Boolean!
+  createdAt: DateTime!
 }
 
 type BillingPageResult {
@@ -178,6 +174,7 @@ type MeterReading {
   value: Float!
   consumption: Float
   notes: String
+  createdAt: DateTime!
 }
 
 type MeterReadingPageResult {
@@ -203,6 +200,7 @@ type Payment {
   paymentDate: String!
   reference: String
   notes: String
+  createdAt: DateTime!
 }
 
 type PaymentPageResult {
@@ -303,7 +301,9 @@ input UpdateTariffInput {
 type Query {
   address(take: Int!, skip: Int!): AddressPageResult
   billing(take: Int!, skip: Int!): BillingPageResult
+  getBilling(id: Int!): Billing
   device(take: Int!, skip: Int!): DevicePageResult
+  getDevice(id: Int!): Device
   users(take: Int!, skip: Int!): UserPageResult
   searchAddress(text: String): [Address]!
   searchDevice(text: String): [Device]!
@@ -316,6 +316,8 @@ type Query {
   consumptionReport(userId: Int!, months: Int!): ConsumptionReport
   debtReport: DebtReport
   revenueReport(monthsBack: Int!): RevenueReport
+  getAddress(id: Int!): Address
+  getTariff(id: Int!): Tariff
 }
 
 type Mutation {

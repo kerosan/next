@@ -41,7 +41,6 @@ export const DeviceModal: FC<
     }
     // biome-ignore lint/react-hooks/exhaustiveDeps: setServiceOptions is stable
   }, [servicesData?.services?.list]);
-  const [serviceOptions, setServiceOptions] = useState<SelectProps["options"]>([]);
 
   useEffect(() => {
     if (props.open && props.device) {
@@ -52,7 +51,7 @@ export const DeviceModal: FC<
   return (
     <Modal
       {...props}
-      title={props.device ? `Редагувати лічильник #${props.device.id}` : "Додати лічильник"}
+      title={props.device ? `Edit device #${props.device.id}` : "Add device"}
       okButtonProps={{ autoFocus: true, htmlType: "submit" }}
       destroyOnClose
       modalRender={(dom) => (
@@ -89,50 +88,50 @@ export const DeviceModal: FC<
       )}
     >
       <Field 
-        label="Номер лічильника" 
+        label="Meter number" 
         name="meterNumber" 
         rules={[
-          { required: true, message: "Будь ласка, введіть номер лічильника" },
-          { pattern: /^\d+$/, message: "Номер має містити тільки цифри" }
+          { required: true, message: "Please enter the meter number" },
+          { pattern: /^\d+$/, message: "Number must contain only digits" }
         ]}
       >
-        <Input placeholder="Наприклад: 12345678" />
+        <Input placeholder="e.g.: 12345678" />
       </Field>
       <Field 
-        label="Послуга" 
+        label="Service" 
         name="serviceId" 
         rules={[
-          { required: true, message: "Будь ласка, виберіть послугу" }
+          { required: true, message: "Please select a service" }
         ]}
       >
         <Select
-          placeholder="Виберіть послугу (Вода, Газ, Електрика)"
+          placeholder="Select a service (Water, Gas, Electricity)"
           options={serviceOptions}
         />
       </Field>
       <Row justify={"space-between"}>
         <Col flex={"50%"}>
           <Field 
-            label="Дата встановлення" 
+            label="Installation date" 
             name="startDate" 
             rules={[
-              { required: true, message: "Будь ласка, виберіть дату" }
+              { required: true, message: "Please select a date" }
             ]}
           >
             <DatePicker format={"DD-MMM-YYYY"} />
           </Field>
         </Col>
         <Col flex={"50%"}>
-          <Field label="Дата зняття" name="endDate">
+          <Field label="Removal date" name="endDate">
             <DatePicker format={"DD-MMM-YYYY"} />
           </Field>
         </Col>
       </Row>
       <Field 
-        label="Початкові показання" 
+        label="Initial reading" 
         name="initialValue" 
         rules={[
-          { required: true, message: "Будь ласка, введіть початкові показання" }
+          { required: true, message: "Please enter the initial reading" }
         ]}
       >
         <InputNumber
